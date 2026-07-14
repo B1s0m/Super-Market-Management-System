@@ -12,17 +12,40 @@
 ## Description
 
 ## User Stories
+
+
+### Guest
 - As a guest, I want to view the list of available products.
 - As a guest, I want to create a new account.
-- As a registered user, I want to log in securely.
-- As a registered user, I want to add new products to the supermarket.
-- As a registered user, I want to view detailed information about a product.
-- As a registered user, I want to edit the products that I created.
-- As a registered user, I want to delete the products that I created.
-- As a registered user, I want to log out securely.
-- As a registered user, I want to access my profile.
-- As a user, I want to be the only person who can edit or delete my own products.
-- As a user, I want a simple and easy-to-use interface for managing supermarket products.
+
+### Customer
+- As a customer, I want to log in securely.
+- As a customer, I want to log out securely.
+- As a customer, I want to browse all available products.
+- As a customer, I want to search for products by name or category.
+- As a customer, I want to add products to my shopping cart.
+- As a customer, I want to update the quantity of products in my shopping cart.
+- As a customer, I want to remove products from my shopping cart.
+- As a customer, I want to complete my purchase.
+- As a customer, I want to view my previous orders.
+- As a customer, I want to update my profile information.
+
+### Employee
+- As an employee, I want to log in securely.
+- As an employee, I want to log out securely.
+- As an employee, I want to add new products.
+- As an employee, I want to edit product information.
+- As an employee, I want to delete products.
+- As an employee, I want to update product prices and stock quantities.
+
+### Admin
+- As an admin, I want to log in securely.
+- As an admin, I want to log out securely.
+- As an admin, I want to create employee accounts.
+- As an admin, I want to edit employee accounts.
+- As an admin, I want to delete employee accounts.
+- As an admin, I want to manage all users in the system.
+- As an admin, I want full access to all application features.
 
 ## Screenshots
 
