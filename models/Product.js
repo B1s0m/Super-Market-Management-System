@@ -45,6 +45,21 @@ const productSchema = new mongoose.Schema({
     type: String,
     default: ""
   },
+  brand: {
+  type: String,
+  required: true,
+  trim: true
+},
+discount: {
+  type: Number,
+  default: 0,
+  min: 0,
+  max: 100
+},
+views: {
+  type: Number,
+  default: 0
+},
 
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,

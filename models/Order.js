@@ -7,25 +7,43 @@ const orderSchema = new mongoose.Schema({
     ref: "User",
     required: true
   },
-  cart: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Cart",
-    required: true
-  },
+ items: [
+  {
+    product: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product",
+      required: true
+    },
 
- 
+    quantity: {
+      type: Number,
+      required: true
+    },
 
- 
-  status: {
-    type: String,
-    enum: [
-      "Pending",
-      "Processing",
-      "Completed",
-      "Cancelled"
-    ],
-    default: "Pending"
+    price: {
+      type: Number,
+      required: true
+    }
   }
+],
+
+delivery: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User"
+},
+
+status: {
+  type: String,
+  enum: [
+    "Pending",
+    "Confirmed",
+    "Packed",
+    "Shipped",
+    "Delivered",
+    "Cancelled"
+  ],
+  default: "Pending"
+},
 
 }, { timestamps: true });
 

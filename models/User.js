@@ -19,11 +19,29 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  address: {
+    type: String,
+},
+   numbrer: {
+    type: Number,
+  },
+  
+
+  wishlist: [
+  {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Product"
+  }
+],
 
   role: {
     type: String,
-    enum: ["customer", "employee", "admin"],
-    default: "customer"
+enum: [
+    "customer",
+    "employee",
+    "delivery",
+    "admin"
+  ],    default: "customer"
   }
 
 }, { timestamps: true });
