@@ -12,7 +12,8 @@
 ## Description
 
 ## ERD 
-![alt text](<Super-Market-Management-Syste (1).jpg>)
+![alt text](<Super-Market-Management-Syste (2).jpg>)
+
 ## User Stories
 
 ## 📖 User Stories
