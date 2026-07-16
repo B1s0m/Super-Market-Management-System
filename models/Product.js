@@ -11,6 +11,9 @@ const productSchema = new mongoose.Schema({
   category: {
     type: String,
     required: true,
+   category: {
+    type: String,
+    required: true,
     enum: [
       "Fruits",
       "Vegetables",
@@ -21,6 +24,41 @@ const productSchema = new mongoose.Schema({
       "Frozen Foods",
       "Other"
     ]
+  },
+
+/////////////
+category: {
+  type: String,
+  required: true,
+  enum: [
+    "Fruits",
+    "Vegetables",
+    "Dairy",
+    "Bakery",
+    "Beverages",
+    "Snacks",
+    "Frozen Foods",
+
+    "Electronics",
+    "Mobile Phones",
+    "Laptops",
+    "Computers",
+    "Tablets",
+    "TV & Audio",
+    "Gaming",
+    "Cameras",
+    "Smart Watches",
+    "Accessories",
+
+    "Home Appliances",
+
+    "Clothing",
+    "Books",
+    "Toys",
+
+    "Other"
+  ]
+}
   },
 
   price: {
