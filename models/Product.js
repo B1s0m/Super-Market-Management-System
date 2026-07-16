@@ -8,25 +8,7 @@ const productSchema = new mongoose.Schema({
     trim: true
   },
 
-  category: {
-    type: String,
-    required: true,
-   category: {
-    type: String,
-    required: true,
-    enum: [
-      "Fruits",
-      "Vegetables",
-      "Dairy",
-      "Bakery",
-      "Beverages",
-      "Snacks",
-      "Frozen Foods",
-      "Other"
-    ]
-  },
 
-/////////////
 category: {
   type: String,
   required: true,
@@ -59,7 +41,7 @@ category: {
     "Other"
   ]
 }
-  },
+,
 
   price: {
     type: Number,
@@ -85,7 +67,7 @@ category: {
   },
   brand: {
   type: String,
-  required: true,
+  default:"unknow",
   trim: true
 },
 discount: {

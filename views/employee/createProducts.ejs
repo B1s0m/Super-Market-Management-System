@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <%- include('../partials/employee/navbar') %>
+
+        <h1>hi <%=user.username%>
+        </h1>
+        <form action="" method="post">
+
+            <label for="name">Nmae:</label>
+            <input id="name" type="text" name="nmae" required>
+
+            <label for="category">Category</label>
+            <select name="category">
+                <option>Fruits</option>
+                <option>Vegetables</option>
+                <option>Dairy</option>
+                <option>Travel</option>
+                <option>Food</option>
+                <option>Lifestyle</option>
+                <option>Other</option>
+            </select>
+
+
+            <label for="brand">brand:</label>
+            <input id="brand" type="text" name="brand" required>
+           
+            <label for="price">price:</label>
+            <input id="price" type="number" name="price" required>
+           
+            <label for="discount">discount:</label>
+            <input id="discount" type="number" name="discount" required>
+         
+        
+            <label for="image">image:</label>
+            <input id="image" type="text" name="image" required>
+
+            <label for="quantity">Quantity:</label>
+            <input id="quantity" type="text" name="quantity" required>
+
+            <label for="description">Description</label>
+            <textarea id="content" name="description" required></textarea>
+   
+        </form>
+</body>
+
+</html>
