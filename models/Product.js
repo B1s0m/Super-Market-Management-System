@@ -8,41 +8,6 @@ const productSchema = new mongoose.Schema({
     trim: true
   },
 
-
-category: {
-  type: String,
-  required: true,
-  enum: [
-    "Fruits",
-    "Vegetables",
-    "Dairy",
-    "Bakery",
-    "Beverages",
-    "Snacks",
-    "Frozen Foods",
-
-    "Electronics",
-    "Mobile Phones",
-    "Laptops",
-    "Computers",
-    "Tablets",
-    "TV & Audio",
-    "Gaming",
-    "Cameras",
-    "Smart Watches",
-    "Accessories",
-
-    "Home Appliances",
-
-    "Clothing",
-    "Books",
-    "Toys",
-
-    "Other"
-  ]
-}
-,
-
   price: {
     type: Number,
     required: true,
@@ -86,6 +51,20 @@ views: {
     ref: "User",
     required: true
   }
+
+
+  , specifications: {
+    type: mongoose.Schema.Types.Mixed,
+    default: {}
+  },
+
+    subcategory: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Subcategory",
+    required: true
+  },
+
+
 
 }, { timestamps: true });
 

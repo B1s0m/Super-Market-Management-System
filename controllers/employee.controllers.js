@@ -1,8 +1,12 @@
 const router = require("express").Router()
 const Products=require("./../models/Product")
+const catgoty =require("./../models/Category")
+const subcatgoty =require("./../models/Subcategory")
+router.get('/new',async(req,res)=>{
+    const findcategory=await catgoty.find();
+    const findsubcategory=await subcatgoty.find();
 
-router.get('/new',(req,res)=>{
-    res.render('employee/createProducts.ejs')
+    res.render('employee/createProducts.ejs',{categories:findcategory,subcategories:findsubcategory})
 })
 router.post('/new', async(req,res)=>{
     console.log(req.session.user._id)
