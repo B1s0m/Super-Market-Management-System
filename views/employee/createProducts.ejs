@@ -8,7 +8,6 @@
     <title>Document</title>
 </head>
 
-
 <body>
     <%- include('../partials/employee/navbar') %>
 
@@ -19,8 +18,8 @@
                 <label for="name">Nmae:</label>
                 <input id="name" type="text" name="name" required>
 
-                <label>Category</label>
-                <select id="category" name="category">
+                <label id="labelcaegory">Category</label>
+                <select id="selectcategory" name="category">
                     <option value="">Choose Category</option>
 
                     <% categories.forEach(category=> { %>
@@ -32,8 +31,8 @@
                 </select>
 
 
-                <label>
-                    <input type="checkbox" id="addCategory">
+                <label id="labelcategory">
+                    <input type="checkbox" id="checkboxcategory">
                     Add new category
                 </label>
 
@@ -41,21 +40,16 @@
                 <input type="text" id="newCategory" name="newCategory" placeholder="New Category Name"
                     style="display:none;">
                 <!-- ------------------------------------------------------------------------ -->
-                <label>Subcategory</label>
+                <label id="labelSubcategory">Subcategory</label>
 
-                <select id="subcategory" name="subcategory">
+                <select id="selectsubcategory" name="subcategory">
                     <option value="">Choose Category</option>
 
-                    <% subcategories.forEach(subcategories=> { %>
 
-                        <option value="<%= subcategories._id %>">
-                            <%= subcategories.name %>
-                        </option>
-                        <% }) %>
                 </select>
 
-                <label>
-                    <input type="checkbox" id="addSubcategory">
+                <label id="labeladdSubcategory">
+                    <input type="checkbox" id="checkboxSubcategory">
                     Add new subcategory
                 </label>
 
@@ -83,6 +77,7 @@
                 <label for="description">Description</label>
                 <textarea id="content" name="description"></textarea>
                 <button type="submit">create parodect</button>
+                <input type="hidden" id="subcategoriesData" value='<%- JSON.stringify(subcategories) %>'>
             </form>
         </div>
 </body>
@@ -90,41 +85,120 @@
 </html>
 
 <script>
-    const addCategory = document.getElementById("addCategory");
-    const selecCategory = document.getElementById("category");
+
+    const allSubcategories = JSON.parse(
+        document.getElementById("subcategoriesData").value
+    );
+    const selectcategory = document.getElementById("selectcategory");
     const newCategory = document.getElementById("newCategory");
+    const checkboxcategory = document.getElementById("checkboxcategory");
+    const labelcategory = document.getElementById("labelcategory");
+
+    const selectsubcategory = document.getElementById("selectsubcategory");
+    const newSubcategory = document.getElementById("newSubcategory");
+    const checkboxSubcategory = document.getElementById("checkboxSubcategory");
+
+    const labelSubcategory = document.getElementById("labelSubcategory");
+    const labeladdSubcategory = document.getElementById("labeladdSubcategory");
 
 
-    addCategory.addEventListener("change", () => {
 
-        if (addCategory.checked) {
+  
+        labelSubcategory.style.display = "none";
+        selectsubcategory.style.display = "none";
+        checkboxSubcategory.style.display = "none";
+        labeladdSubcategory.style.display = "none";
+        newSubcategory.style.display = "none";
+  
+
+
+
+    checkboxcategory.addEventListener("change", function () {
+
+        if (this.checked) {
+
             newCategory.style.display = "block";
-            selecCategory.style.display = "none";
-        }
-        else {
+            selectcategory.style.display = "none";
+
+            labeladdSubcategory.style.display = "block";
+            newSubcategory.style.display = "block";
+
+        } else {
+
             newCategory.style.display = "none";
-            selecCategory.style.display = "block";
+            selectcategory.style.display = "block";
+
+            labeladdSubcategory.style.display = "none";
+            newSubcategory.style.display = "none";
         }
 
     });
 
 
 
-    const allnewSubcategory = subcategories;
-    const addSubcategory = document.getElementById("addSubcategory");
-    const selectSubcategory = document.getElementById("subcategory");
-    const newSubcategory = document.getElementById("newSubcategory");
+    selectcategory.addEventListener("change", function () {
+
+        const categoryId = this.value;
 
 
-    addSubcategory.addEventListener("change", () => {
-
-        if (addSubcategory.checked) {
-            newSubcategory.style.display = "block";
-            selectSubcategory.style.display = "none";
-        }
-        else {
+        if (!categoryId) {
+            labelSubcategory.style.display = "none";
+            selectsubcategory.style.display = "none";
+            checkboxSubcategory.style.display = "none";
+            labeladdSubcategory.style.display = "none";
             newSubcategory.style.display = "none";
-            selectSubcategory.style.display = "block";
+            return;
+        }
+            console.log(categoryId + "                none");
+            checkboxcategory.style.display = "none";
+            labelcategory.style.display = "none";
+
+        
+
+        labelSubcategory.style.display = "block";
+        selectsubcategory.style.display = "block";
+        checkboxSubcategory.style.display = "block";
+        labeladdSubcategory.style.display = "block";
+
+
+        selectsubcategory.innerHTML =
+            '<option value="">Choose Subcategory</option>';
+
+
+        const result = allSubcategories.filter(sub => {
+             
+            return sub.category === categoryId;
+
+        });
+
+
+        result.forEach(sub => {
+
+            const option = document.createElement("option");
+
+            option.value = sub._id;
+            option.textContent = sub.name;
+
+            selectsubcategory.appendChild(option);
+
+        });
+
+    });
+
+
+
+    checkboxSubcategory.addEventListener("change", function () {
+
+        if (this.checked) {
+
+            newSubcategory.style.display = "block";
+            selectsubcategory.style.display = "none";
+
+        } else {
+
+            newSubcategory.style.display = "none";
+            selectsubcategory.style.display = "block";
+
         }
 
     });

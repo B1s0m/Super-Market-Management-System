@@ -6,6 +6,8 @@ router.get('/new',async(req,res)=>{
     const findcategory=await catgoty.find();
     const findsubcategory=await subcatgoty.find();
 
+
+
     res.render('employee/createProducts.ejs',{categories:findcategory,subcategories:findsubcategory})
 })
 router.post('/new', async(req,res)=>{
