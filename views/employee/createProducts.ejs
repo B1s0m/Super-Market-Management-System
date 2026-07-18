@@ -74,6 +74,11 @@
 
 
 
+
+                <label for="labelnumber">How many variants?</label>
+                <input id="variantsnumber" type="number" min="1" placeholder="e.g. 3">
+
+
                 <label for="variants">Enter all variants (separated by spaces):</label>
 
                 <input id="variantstext" type="text" placeholder="size color weight">
@@ -160,6 +165,8 @@
         if (!categoryId) {
             labelSubcategory.style.display = "none";
             selectsubcategory.style.display = "none";
+
+
             checkboxSubcategory.style.display = "none";
             labeladdSubcategory.style.display = "none";
             newSubcategory.style.display = "none";
@@ -232,6 +239,9 @@
     const variantsbutton = document.getElementById("variantsbutton")
     const containervariants = document.getElementById("containervariants")
 
+    const variantsnumber = document.getElementById("variantsnumber")
+    const labelnumber = document.getElementById("labelnumber")
+
 
 
 
@@ -240,30 +250,71 @@
 
         console.log(input.value);
 
-        const keyspecfic = input.value.trim().split(" ").map(item => item.toLowerCase());
-        for (let index = 0; index < keyspecfic.length; index++) {
-            console.log(keyspecfic);
+        const keyspecfic = input.value
+            .trim()
+            .split(/\s+/)          // split on one or more spaces
+            .filter(item => item)  // remove empty strings
+            .map(item => item.toLowerCase());
 
+        if (isvariants) {
+            keyspecfic.push("price", "quantity", "image");
 
-            const label = document.createElement("label");
+            const variantsNumbers = Number(variantsnumber.value);
 
-            label.htmlFor = keyspecfic[index];
-            label.textContent = keyspecfic[index]
+            for (let v = 0; v < variantsNumbers; v++) {
 
-            const value = document.createElement("input");
-            value.type = "text";
-            if (isvariants === true) {
-                value.name = `variants[0][attributes][${keyspecfic[index]}]`;
-            } else {
-                value.name = `specifications[${keyspecfic[index]}]`;
-               }
-            value.placeholder = keyspecfic[index];
+                const title = document.createElement("h3");
+                title.textContent = `Variant ${v + 1}`;
+                container.appendChild(title);
 
+                for (let i = 0; i < keyspecfic.length; i++) {
 
+                    const key = keyspecfic[i];
 
-            container.appendChild(label)
-            container.appendChild(value)
+                    const label = document.createElement("label");
+                    label.textContent = key;
+
+                    const value = document.createElement("input");
+                    value.type = "text";
+
+                    if (["price", "quantity", "image"].includes(key)) {
+                        value.name = `variants[${v}][${key}]`;
+                    } else {
+                        value.name = `variants[${v}][attributes][${key}]`;
+                    }
+
+                    value.placeholder = key;
+
+                    container.appendChild(label);
+                    container.appendChild(value);
+                    container.appendChild(document.createElement("br"));
+                }
+            }
+
+        } else {
+            const title = document.createElement("h3");
+            title.textContent = `specifications `;
+            container.appendChild(title);
+
+            for (const key of keyspecfic) {
+
+                const label = document.createElement("label");
+                label.textContent = key;
+
+                const value = document.createElement("input");
+                value.type = "text";
+                value.name = `specifications[${key}]`;
+
+                container.appendChild(label);
+                container.appendChild(value);
+                container.appendChild(document.createElement("br"));
+                container.appendChild(document.createElement("br"));
+            }
+            // const hr = document.createElement("hr");
+            // container.appendChild(hr);
         }
+
+
 
 
     }
