@@ -39,7 +39,7 @@
 
                 <input type="text" id="newCategory" name="newCategory" placeholder="New Category Name"
                     style="display:none;">
-                <!-- ------------------------------------------------------------------------ -->
+
                 <label id="labelSubcategory">Subcategory</label>
 
                 <select id="selectsubcategory" name="subcategory">
@@ -61,18 +61,33 @@
                 <label for="brand">brand:</label>
                 <input id="brand" type="text" name="brand">
 
-                <label for="price">price:</label>
-                <input id="price" type="number" name="price" step="0.01" required>
-
                 <label for="discount">discount:</label>
                 <input id="discount" type="number" name="discount">
 
 
-                <label for="image">image:</label>
+
+                <label for="specifications">Enter all specifications (separated by spaces):</label>
+
+                <input id="specificationstext" type="text" placeholder="size color weight">
+                <button type="button" id="specificationbutton"> create specifications </button>
+                <div id="containerSpecifications"></div>
+
+
+
+                <label for="variants">Enter all variants (separated by spaces):</label>
+
+                <input id="variantstext" type="text" placeholder="size color weight">
+                <button type="button" id="variantsbutton"> create variants </button>
+                <div id="containervariants"></div>
+
+                <!-- <label for="price">price:</label>
+                <input id="price" type="number" name="price" step="0.01" required> -->
+
+                <!-- <label for="image">image:</label>
                 <input id="image" type="text" name="image">
 
                 <label for="quantity">Quantity:</label>
-                <input id="quantity" type="number" name="quantity" required>
+                <input id="quantity" type="number" name="quantity" required> -->
 
                 <label for="description">Description</label>
                 <textarea id="content" name="description"></textarea>
@@ -89,6 +104,7 @@
     const allSubcategories = JSON.parse(
         document.getElementById("subcategoriesData").value
     );
+
     const selectcategory = document.getElementById("selectcategory");
     const newCategory = document.getElementById("newCategory");
     const checkboxcategory = document.getElementById("checkboxcategory");
@@ -103,13 +119,13 @@
 
 
 
-  
-        labelSubcategory.style.display = "none";
-        selectsubcategory.style.display = "none";
-        checkboxSubcategory.style.display = "none";
-        labeladdSubcategory.style.display = "none";
-        newSubcategory.style.display = "none";
-  
+
+    labelSubcategory.style.display = "none";
+    selectsubcategory.style.display = "none";
+    checkboxSubcategory.style.display = "none";
+    labeladdSubcategory.style.display = "none";
+    newSubcategory.style.display = "none";
+
 
 
 
@@ -147,16 +163,16 @@
             checkboxSubcategory.style.display = "none";
             labeladdSubcategory.style.display = "none";
             newSubcategory.style.display = "none";
-            
+
             checkboxcategory.style.display = "block";
             labelcategory.style.display = "block";
             return;
         }
-            console.log(categoryId + "                none");
-            checkboxcategory.style.display = "none";
-            labelcategory.style.display = "none";
+        console.log(categoryId + "                none");
+        checkboxcategory.style.display = "none";
+        labelcategory.style.display = "none";
 
-        
+
 
         labelSubcategory.style.display = "block";
         selectsubcategory.style.display = "block";
@@ -169,7 +185,7 @@
 
 
         const result = allSubcategories.filter(sub => {
-             
+
             return sub.category === categoryId;
 
         });
@@ -205,6 +221,65 @@
         }
 
     });
+
+
+
+    const exportspecfic = document.getElementById("specificationstext")
+    const specificationbutton = document.getElementById("specificationbutton")
+    const containerSpecifications = document.getElementById("containerSpecifications")
+
+    const exportsvariants = document.getElementById("variantstext")
+    const variantsbutton = document.getElementById("variantsbutton")
+    const containervariants = document.getElementById("containervariants")
+
+
+
+
+    function addInput(input, container, isvariants) {
+        container.innerHTML = "";
+
+        console.log(input.value);
+
+        const keyspecfic = input.value.trim().split(" ").map(item => item.toLowerCase());
+        for (let index = 0; index < keyspecfic.length; index++) {
+            console.log(keyspecfic);
+
+
+            const label = document.createElement("label");
+
+            label.htmlFor = keyspecfic[index];
+            label.textContent = keyspecfic[index]
+
+            const value = document.createElement("input");
+            value.type = "text";
+            if (isvariants === true) {
+                value.name = `variants[0][attributes][${keyspecfic[index]}]`;
+            } else {
+                value.name = `specifications[${keyspecfic[index]}]`;
+               }
+            value.placeholder = keyspecfic[index];
+
+
+
+            container.appendChild(label)
+            container.appendChild(value)
+        }
+
+
+    }
+
+
+
+
+
+    specificationbutton.addEventListener("click", function () {
+        addInput(exportspecfic, containerSpecifications, false)
+    })
+
+    variantsbutton.addEventListener("click", function () {
+        addInput(exportsvariants, containervariants, true)
+    })
+
 
 
 </script>

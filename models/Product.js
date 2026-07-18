@@ -8,28 +8,7 @@ const productSchema = new mongoose.Schema({
     trim: true
   },
 
-  price: {
-    type: Number,
-    required: true,
-    min: 0
-  },
 
-  quantity: {
-    type: Number,
-    required: true,
-    default: 0,
-    min: 0
-  },
-
-  description: {
-    type: String,
-    trim: true
-  },
-
-  image: {
-    type: String,
-    default: ""
-  },
   brand: {
   type: String,
   default:"unknow",
@@ -41,6 +20,7 @@ discount: {
   min: 0,
   max: 100
 },
+// This for how mach this prodect view
 views: {
   type: Number,
   default: 0
@@ -50,13 +30,42 @@ views: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true
-  }
-
-
-  , specifications: {
+  },
+     
+  //Tell the customer about the product
+  description: {
+    type: String,
+    trim: true
+  },
+    // What is the product made of or what are its technical details
+   specifications: {
     type: mongoose.Schema.Types.Mixed,
     default: {}
   },
+  // What choices can the customer select before buying
+  variants: [
+  {
+    attributes: {
+      type: mongoose.Schema.Types.Mixed,
+      default: {}
+    },
+
+    price: {
+      type: Number,
+      required: true
+    },
+
+    quantity: {
+      type: Number,
+      default: 0
+    },
+
+    image: {
+      type: String,
+      default: ""
+    }
+  }
+],
 
     subcategory: {
     type: mongoose.Schema.Types.ObjectId,
@@ -71,3 +80,39 @@ views: {
 const Product = mongoose.model("Product", productSchema);
 
 module.exports = Product;
+
+//  Example how  the prodect show   
+// {
+//  name: "Nike Air Max",
+
+//  description:
+//  "Comfortable running shoes designed for everyday use and sports.",
+
+//  specifications: {
+//     material: "Leather",
+//     sole: "Rubber",
+//     type: "Running shoes"
+//  },
+
+//  variants: [
+//     {
+//       attributes:{
+//         color:"Black",
+//         size:"42"
+//       },
+//       price:120,
+//       quantity:5,
+//       image:"black42.jpg"
+//     },
+
+//     {
+//       attributes:{
+//         color:"White",
+//         size:"43"
+//       },
+//       price:125,
+//       quantity:3,
+//       image:"white43.jpg"
+//     }
+//  ]
+// }

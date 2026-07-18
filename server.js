@@ -20,7 +20,7 @@ const employeeController = require("./controllers/employee.controllers.js");
 
 // Middleware
 app.use(express.static('public')) // my app will serve all static files from public folder
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'))
 app.use(methodOverride('_method'))
 app.use(
