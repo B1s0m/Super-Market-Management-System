@@ -13,7 +13,7 @@
 
         <div class="container">
             <h1> page create Prodect</h1>
-            <form action="/products/new" method="post">
+            <form action="/products/new" method="post" enctype="multipart/form-data">
 
                 <label for="name">Nmae:</label>
                 <input id="name" type="text" name="name" required>
@@ -292,6 +292,16 @@
 
                     const value = document.createElement("input");
                     value.type = "text";
+                    
+                    if (key === "image") {
+                        value.type = "file";
+                        value.accept = "image/*";
+                    }else if(key === "price" || key === "quantity") {
+                         value.type = "number";
+                    } 
+                     else {
+                        value.type = "text";
+                    }
 
                     if (["price", "quantity", "image"].includes(key)) {
                         value.name = `variants[${v}][${key}]`;
