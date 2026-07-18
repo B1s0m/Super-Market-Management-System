@@ -85,14 +85,6 @@
                 <button type="button" id="variantsbutton"> create variants </button>
                 <div id="containervariants"></div>
 
-                <!-- <label for="price">price:</label>
-                <input id="price" type="number" name="price" step="0.01" required> -->
-
-                <!-- <label for="image">image:</label>
-                <input id="image" type="text" name="image">
-
-                <label for="quantity">Quantity:</label>
-                <input id="quantity" type="number" name="quantity" required> -->
 
                 <label for="description">Description</label>
                 <textarea id="content" name="description"></textarea>
@@ -228,6 +220,22 @@
         }
 
     });
+    selectsubcategory.addEventListener("change", function () {
+        const categoryId = this.value;
+            // console.log(categoryId);
+        if (categoryId) {
+            labeladdSubcategory.style.display = "none";
+            
+            checkboxSubcategory.style.display = "none";
+  
+        }else{
+          labeladdSubcategory.style.display = "block";
+            
+            checkboxSubcategory.style.display = "block";
+        }
+    });
+
+
 
 
 
