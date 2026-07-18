@@ -132,17 +132,21 @@
 
             newCategory.style.display = "block";
             selectcategory.style.display = "none";
+            selectcategory.value = ""
+            console.log(selectcategory.value);
 
             labeladdSubcategory.style.display = "block";
             newSubcategory.style.display = "block";
-
+            selectsubcategory.value = ""
         } else {
 
             newCategory.style.display = "none";
+            newCategory.value = "";
             selectcategory.style.display = "block";
 
             labeladdSubcategory.style.display = "none";
             newSubcategory.style.display = "none";
+            newSubcategory.value = ""
         }
 
     });
@@ -162,6 +166,7 @@
             checkboxSubcategory.style.display = "none";
             labeladdSubcategory.style.display = "none";
             newSubcategory.style.display = "none";
+            newSubcategory.value = "";
 
             checkboxcategory.style.display = "block";
             labelcategory.style.display = "block";
@@ -211,10 +216,13 @@
 
             newSubcategory.style.display = "block";
             selectsubcategory.style.display = "none";
+            selectsubcategory.value = "";
 
         } else {
 
             newSubcategory.style.display = "none";
+            newSubcategory.value = "";
+
             selectsubcategory.style.display = "block";
 
         }
@@ -222,15 +230,15 @@
     });
     selectsubcategory.addEventListener("change", function () {
         const categoryId = this.value;
-            // console.log(categoryId);
+        // console.log(categoryId);
         if (categoryId) {
             labeladdSubcategory.style.display = "none";
-            
+
             checkboxSubcategory.style.display = "none";
-  
-        }else{
-          labeladdSubcategory.style.display = "block";
-            
+
+        } else {
+            labeladdSubcategory.style.display = "block";
+
             checkboxSubcategory.style.display = "block";
         }
     });
