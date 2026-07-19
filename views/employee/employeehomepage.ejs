@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Dashboard</title>
+    <link rel="stylesheet" href="/css/employee/employeehome.css">
+    <link rel="stylesheet" href="/css/employee/navbar.css">
+</head>
+
+<body>
+
+    <%- include('../partials/employee/navbar') %>
+
+    <main class="dashboard">
+
+        <section class="header">
+            <h1>Welcome Employee <%= user.username %> </h1>
+           
+        </section>
+
+
+        <section class="cards">
+
+            <div class="card">
+                <h2>Products</h2>
+                <p>Manage your products</p>
+                <a href="/employee/products">View Products</a>
+            </div>
+
+
+            <div class="card">
+                <h2>Categories</h2>
+                <p>Add or update categories</p>
+                <a href="/employee/categories">Manage Categories</a>
+            </div>
+
+
+            <div class="card">
+                <h2>Orders</h2>
+                <p>Check customer orders</p>
+                <a href="/employee/orders">View Orders</a>
+            </div>
+
+
+            <div class="card">
+                <h2>Customers</h2>
+                <p>View customer information</p>
+                <a href="/employee/customers">Customers</a>
+            </div>
+
+        </section>
+
+
+  
+
+    </main>
+
+
+</body>
+</html>

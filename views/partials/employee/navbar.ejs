@@ -1,14 +1,46 @@
-<nav>
-    
-    <a href="/">Homepage</a>
-    <% if (user){ %>
-    <a href="/auth/sign-out">Logout</a>
-    <a href="/products/new">new prodect</a>
+<aside class="sidebar">
 
-    <% } else{ %>
-    <a href="/auth/sign-up">Sign up</a>
-    <a href="/auth/sign-in">Login</a>
+    <div class="logo">
+        Employee Panel
+    </div>
 
-    <% } %>
-    
-</nav>
+
+    <nav>
+
+        <a href="/employee">
+            🏠 Home
+        </a>
+
+        <a href="/products/new">
+            ➕ Add Product
+        </a>
+        <a href="/products/veiws">
+            📦 Products
+        </a>
+
+
+        <a href="/employee">
+            📁 Categories
+        </a>
+
+        <a href="/employee">
+            🛒 Orders
+        </a>
+
+        <a href="/employee">
+           👤 profile
+        </a>
+
+
+        <% if(user){ %>
+
+            <a href="/auth/sign-out">
+                🚪 Logout
+            </a>
+
+        <% } %>
+
+
+    </nav>
+
+</aside>

@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/createparodect.css">
+    <link rel="stylesheet" href="/css/employee/createparodect.css">
+    <link rel="stylesheet" href="/css/employee/navbar.css">
     <title>Document</title>
 </head>
 
@@ -12,85 +13,96 @@
     <%- include('../partials/employee/navbar') %>
 
         <div class="container">
-            <h1> page create Prodect</h1>
-            <form action="/products/new" method="post" enctype="multipart/form-data">
+            <h1>  Add Prodect</h1>
+            <% if (error) { %>
+                <p style="color: brown;  text-align: center; ">
+                    <%= error %>
+                </p>
+                <% } else { %>
+                    <p style="color: green;  text-align: center; ">
+                        <%= success %>
+                    </p>
+                    <%} %>
 
-                <label for="name">Nmae:</label>
-                <input id="name" type="text" name="name" required>
+                        <form action="/products/new" method="post" enctype="multipart/form-data">
 
-                <label id="labelcaegory">Category</label>
-                <select id="selectcategory" name="category">
-                    <option value="">Choose Category</option>
+                            <label for="name">Nmae:</label>
+                            <input id="name" type="text" name="name" value="<%= oldData?.name || '' %>" required>
 
-                    <% categories.forEach(category=> { %>
-                        <option value="<%= category._id %>">
-                            <%= category.name %>
-                        </option>
-                        <% }) %>
+                            <label id="labelcaegory">Category</label>
+                            <select id="selectcategory" name="category">
+                                <option value="">Choose Category</option>
 
-                </select>
+                                <% categories.forEach(category=> { %>
+                                    <option value="<%= category._id %>" >
+                                        <%= category.name %>
+                                    </option>
+                                    <% }) %>
 
-
-                <label id="labelcategory">
-                    <input type="checkbox" id="checkboxcategory">
-                    Add new category
-                </label>
-
-
-                <input type="text" id="newCategory" name="newCategory" placeholder="New Category Name"
-                    style="display:none;">
-
-                <label id="labelSubcategory">Subcategory</label>
-
-                <select id="selectsubcategory" name="subcategory">
-                    <option value="">Choose Category</option>
+                            </select>
 
 
-                </select>
-
-                <label id="labeladdSubcategory">
-                    <input type="checkbox" id="checkboxSubcategory">
-                    Add new subcategory
-                </label>
+                            <label id="labelcategory">
+                                <input type="checkbox" id="checkboxcategory">
+                                Add new category
+                            </label>
 
 
-                <input type="text" id="newSubcategory" name="newSubcategory" placeholder="New Subcategory Name"
-                    style="display:none;">
+                            <input type="text" id="newCategory" name="newCategory"    placeholder="New Category Name"
+                                style="display:none;">
+
+                            <label id="labelSubcategory">Subcategory</label>
+
+                            <select id="selectsubcategory" name="subcategory" >
+                                <option value="">Choose Category</option>
 
 
-                <label for="brand">brand:</label>
-                <input id="brand" type="text" name="brand">
+                            </select>
 
-                <label for="discount">discount:</label>
-                <input id="discount" type="number" name="discount">
-
-
-
-                <label for="specifications">Enter all specifications (separated by spaces):</label>
-
-                <input id="specificationstext" type="text" placeholder="size color weight">
-                <button type="button" id="specificationbutton"> create specifications </button>
-                <div id="containerSpecifications"></div>
+                            <label id="labeladdSubcategory">
+                                <input type="checkbox" id="checkboxSubcategory">
+                                Add new subcategory
+                            </label>
 
 
+                            <input type="text" id="newSubcategory" name="newSubcategory"   
+                                placeholder="New Subcategory Name" style="display:none;">
 
 
-                <label for="labelnumber">How many variants?</label>
-                <input id="variantsnumber" type="number" min="1" placeholder="e.g. 3">
+                            <label for="brand">brand:</label>
+                            <input id="brand" type="text" name="brand" value="<%= oldData?.brand || '' %>">
+
+                            <label for="discount">discount:</label>
+                            <input id="discount" type="number" name="discount" value="<%= oldData?.discount || '' %>">
 
 
-                <label for="variants">Enter all variants (separated by spaces):</label>
 
-                <input id="variantstext" type="text" placeholder="size color weight">
-                <button type="button" id="variantsbutton"> create variants </button>
-                <div id="containervariants"></div>
+                            <label for="specifications">Enter all specifications (separated by spaces):</label>
+
+                            <input id="specificationstext" type="text" placeholder="size color weight">
+                            <button type="button" id="specificationbutton"> create specifications </button>
+                            <div id="containerSpecifications"></div>
 
 
-                <label for="description">Description</label>
-                <textarea id="content" name="description"></textarea>
-                <button type="submit">create parodect</button>
-                <input type="hidden" id="subcategoriesData" value='<%- JSON.stringify(subcategories) %>'>
-            </form>
+
+
+                            <label for="labelnumber">How many variants?</label>
+                            <input id="variantsnumber" type="number" min="1" placeholder="e.g. 1 at least 1" required>
+
+
+                            <label for="variants">Enter all variants (separated by spaces):</label>
+
+                            <input id="variantstext" type="text" placeholder="size color weight">
+                            <button type="button" id="variantsbutton"> create variants </button>
+                            <div id="containervariants"></div>
+
+
+                            <label for="description">Description</label>
+                            <textarea id="content" name="description"><%= oldData?.description || '' %> </textarea>
+                            <button type="submit">create parodect</button>
+
+                            <input type="hidden" id="subcategoriesData" value='<%- JSON.stringify(subcategories) %>'>
+                        </form>
         </div>
 </body>
 
@@ -292,14 +304,16 @@
 
                     const value = document.createElement("input");
                     value.type = "text";
-                    
+
                     if (key === "image") {
                         value.type = "file";
                         value.accept = "image/*";
-                    }else if(key === "price" || key === "quantity") {
-                         value.type = "number";
-                    } 
-                     else {
+                        value.required = true;
+                    } else if (key === "price" || key === "quantity") {
+                        value.type = "number";
+                        value.required = true;
+                    }
+                    else {
                         value.type = "text";
                     }
 

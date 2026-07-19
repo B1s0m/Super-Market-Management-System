@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/employee/navbar.css">
+    <link rel="stylesheet" href="/css/employee/productsViews.css">
+    <title>Document</title>
+</head>
+
+<body>
+    <%- include('../partials/employee/navbar') %>
+
+        <main class="container">
+
+            <div class="header">
+
+
+
+                <div class="title">
+
+                    <h1>Products</h1>
+                    <p>
+                        <%= totalProducts %> items
+                    </p>
+
+                </div>
+
+
+                <div class="search-box">
+
+                    <input type="text" placeholder="Search products...">
+
+                </div>
+                <div class="actions">
+                    <a href="/products/new" class="add-btn">
+                        + Add Product
+                    </a>
+                </div>
+
+
+            </div>
+
+
+            <div class="pagination">
+
+                <% if(page> 1){ %>
+                    <a href="?page=<%= page-1 %>">Previous</a>
+                    <% } %>
+
+                        <% for(let i=1; i <=totalPages; i++){ %>
+
+                            <a href="?page=<%= i %>" class="<%= page === i ? 'active' : '' %>">
+                                <%= i %>
+                            </a>
+
+                            <% } %>
+
+                                <% if(page < totalPages){ %>
+                                    <a href="?page=<%= page+1 %>">Next</a>
+                                    <% } %>
+
+            </div>
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>SubCategory</th>
+                        <th>attributes</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th>Actions</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <% Products.forEach(product=>{ %>
+
+                        <tr>
+
+                            <td>
+                                <% if(product.variants.length> 0){ %>
+
+                                    <img src="<%= product.variants[0].image %>" alt="No image">
+
+                                    <% } %>
+                            </td>
+
+
+                            <td>
+                                <%= product.name %>
+                                    <br>
+
+                                    <small>
+                                        <%= product.variants.length %> variants
+                                    </small>
+                            </td>
+
+
+                            <td>
+                                <%= product.subcategory.category.name %>
+
+                            </td>
+
+                            <td>
+                                <%= product.subcategory.name %>
+                            </td>
+
+
+                            <td>
+
+                                <% product.variants.forEach((variant)=>{ %>
+
+                             
+                                    <% Object.entries(variant.attributes).forEach(([key,value])=>{ %>
+                                                                      
+                                        <%= key %>: <%= value %>     <br>
+
+                                                <% }) %>
+                                                       <br>
+                          
+                                                <% }) %>
+                            </td>
+
+                            <td>
+
+
+                                <% for (const element of product.variants) { %>
+                                    <%= element.price %> BH <br>
+                                        <% } %>
+                            </td>
+
+
+                            <td>
+
+                                <% for (const element of product.variants) { %>
+                                    <%= element.quantity %> <br>
+                                        <% } %>
+
+
+
+                            </td>
+
+
+                            <td>
+
+                                <a href="/products/<%= product._id %>/edit" class="btn-ed">
+                                    Edit
+                                </a>
+
+
+                                <form action="/products/<%= product._id %>?_method=DELETE" method="POST">
+
+                                    <button class="btn-del">
+                                        Delete
+                                    </button>
+
+                                </form>
+
+                            </td>
+
+                        </tr>
+
+
+                        <% }) %>
+
+                </tbody>
+
+            </table>
+
+        </main>
+
+
+
+
+
+
+
+
+</body>
+
+</html>
