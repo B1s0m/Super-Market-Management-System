@@ -17,24 +17,32 @@
 
     </form>
 
-
+     
     <div class="nav-links">
+          <% if (user){ %>
+ 
+            <a href="/details">
+                👤 Profile
+            </a>
+            
+            <a href="/orders">
+                📦 Orders
+            </a>
+            
+            <a href="/wishlist">
+                ♡ Wishlist
+            </a>
+            
+            <a href="/cart">
+                🛒 Cart
+            </a>
+            <a href="/auth/sign-out">🚪 Logout</a>
 
-        <a href="/profile">
-            👤 Profile
-        </a>
+        <% } else{ %>
+    <a href="/auth/sign-up">📝 Sign up</a>
+    <a href="/auth/sign-in">🔑 Login</a>
 
-        <a href="/orders">
-            📦 Orders
-        </a>
-
-        <a href="/wishlist">
-            ♡ Wishlist
-        </a>
-
-        <a href="/cart">
-            🛒 Cart
-        </a>
+    <% } %>
 
     </div>
 
