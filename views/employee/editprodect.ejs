@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/employee/createparodect.css">
+    <link rel="stylesheet" href="/css/employee/navbar.css">
+    <title>Document</title>
+</head>
+
+<body>
+    <%- include('../partials/employee/navbar') %>
+
+        <div class="container">
+            <h1> Add Prodect</h1>
+
+
+            <form action="/products/new" method="post" enctype="multipart/form-data">
+
+                <label for="name">Nmae:</label>
+                <input id="name" type="text" name="name" value="<%= findoneproduct?.name || '' %>" required>
+
+                <label id="labelcaegory">Category</label>
+                <select id="selectcategory" name="category">
+                    <option value="">Choose Category</option>
+
+                    <% categories.forEach(category=> { %>
+                        <option value="<%= category._id %>" <% if ( findoneproduct &&
+                            category._id.toString()==findoneproduct.subcategory.category._id.toString() ) { %>
+                            selected
+                            <% }%> >
+                                <%= category.name %>
+                        </option>
+                        <% }) %>
+
+                </select>
+
+
+                <label id="labelcategory">
+                    <input type="checkbox" id="checkboxcategory">
+                    Add new category
+                </label>
+
+
+                <input type="text" id="newCategory" name="newCategory" placeholder="New Category Name"
+                    style="display:none;">
+
+                <label id="labelSubcategory">Subcategory</label>
+
+                <select id="selectsubcategory" name="subcategory">
+                    <option value="">Choose Category</option>
+
+
+                </select>
+
+                <label id="labeladdSubcategory">
+                    <input type="checkbox" id="checkboxSubcategory">
+                    Add new subcategory
+                </label>
+
+
+                <input type="text" id="newSubcategory" name="newSubcategory" placeholder="New Subcategory Name"
+                    style="display:none;">
+
+
+                <label for="brand">brand:</label>
+                <input id="brand" type="text" name="brand" value="<%= findoneproduct?.brand || '' %>">
+
+                <label for="discount">discount:</label>
+                <input id="discount" type="number" name="discount" value="<%= findoneproduct?.discount || '' %>">
+
+
+
+                <label for="specifications">Enter all specifications (separated by spaces):</label>
+
+                <input id="specificationstext" type="text" placeholder="size color weight">
+                <button type="button" id="specificationbutton"> create specifications </button>
+                <div id="containerSpecifications"></div>
+
+
+
+
+                <label for="labelnumber">How many variants?</label>
+                <input id="variantsnumber" type="number" min="1" placeholder="e.g. 1 at least 1" required>
+
+
+                <label for="variants">Enter all variants (separated by spaces):</label>
+
+                <input id="variantstext" type="text" placeholder="size color weight">
+                <button type="button" id="variantsbutton"> create variants </button>
+                <div id="containervariants"></div>
+
+
+                <label for="description">Description</label>
+                <textarea id="content" name="description"><%= findoneproduct?.description || '' %> </textarea>
+                <button type="submit">create parodect</button>
+                <input type="hidden" id="subcategoriesData" value='<%- JSON.stringify(subcategories) %>'>
+ 
+                <input type="hidden" id="productData" value='<%- JSON.stringify(findoneproduct) %>'>
+
+                </form>
+        </div>
+</body>
+
+</html>
+
+<script>
+
+    const allSubcategories = JSON.parse(
+        document.getElementById("subcategoriesData").value
+    );
+    const productData = JSON.parse(
+        document.getElementById("productData").value
+    );
+
+    const selectcategory = document.getElementById("selectcategory");
+    const newCategory = document.getElementById("newCategory");
+    const checkboxcategory = document.getElementById("checkboxcategory");
+    const labelcategory = document.getElementById("labelcategory");
+
+    const selectsubcategory = document.getElementById("selectsubcategory");
+    const newSubcategory = document.getElementById("newSubcategory");
+    const checkboxSubcategory = document.getElementById("checkboxSubcategory");
+
+    const labelSubcategory = document.getElementById("labelSubcategory");
+    const labeladdSubcategory = document.getElementById("labeladdSubcategory");
+
+
+
+
+    labelSubcategory.style.display = "none";
+    selectsubcategory.style.display = "none";
+    checkboxSubcategory.style.display = "none";
+    labeladdSubcategory.style.display = "none";
+    newSubcategory.style.display = "none";
+
+
+
+
+    checkboxcategory.addEventListener("change", function () {
+
+        if (this.checked) {
+
+            newCategory.style.display = "block";
+            selectcategory.style.display = "none";
+            selectcategory.value = ""
+            console.log(selectcategory.value);
+
+            labeladdSubcategory.style.display = "block";
+            newSubcategory.style.display = "block";
+            selectsubcategory.value = ""
+        } else {
+
+            newCategory.style.display = "none";
+            newCategory.value = "";
+            selectcategory.style.display = "block";
+
+            labeladdSubcategory.style.display = "none";
+            newSubcategory.style.display = "none";
+            newSubcategory.value = ""
+        }
+
+    });
+
+
+
+    selectcategory.addEventListener("change", function () {
+
+        const categoryId = this.value;
+
+
+        if (!categoryId) {
+            labelSubcategory.style.display = "none";
+            selectsubcategory.style.display = "none";
+
+
+            checkboxSubcategory.style.display = "none";
+            labeladdSubcategory.style.display = "none";
+            newSubcategory.style.display = "none";
+            newSubcategory.value = "";
+
+            checkboxcategory.style.display = "block";
+            labelcategory.style.display = "block";
+            return;
+        }
+        console.log(categoryId + "                none");
+        checkboxcategory.style.display = "none";
+        labelcategory.style.display = "none";
+
+
+
+        labelSubcategory.style.display = "block";
+        selectsubcategory.style.display = "block";
+        checkboxSubcategory.style.display = "block";
+        labeladdSubcategory.style.display = "block";
+
+
+        selectsubcategory.innerHTML =
+            '<option value="">Choose Subcategory</option>';
+
+
+        const result = allSubcategories.filter(sub => {
+
+            return sub.category === categoryId;
+
+        });
+
+
+        result.forEach(sub => {
+
+            const option = document.createElement("option");
+
+            option.value = sub._id;
+            option.textContent = sub.name;
+
+            selectsubcategory.appendChild(option);
+
+        });
+
+    });
+
+
+
+    checkboxSubcategory.addEventListener("change", function () {
+
+        if (this.checked) {
+
+            newSubcategory.style.display = "block";
+            selectsubcategory.style.display = "none";
+            selectsubcategory.value = "";
+
+        } else {
+
+            newSubcategory.style.display = "none";
+            newSubcategory.value = "";
+
+            selectsubcategory.style.display = "block";
+
+        }
+
+    });
+    selectsubcategory.addEventListener("change", function () {
+        const categoryId = this.value;
+        // console.log(categoryId);
+        if (categoryId) {
+            labeladdSubcategory.style.display = "none";
+
+            checkboxSubcategory.style.display = "none";
+
+        } else {
+            labeladdSubcategory.style.display = "block";
+
+            checkboxSubcategory.style.display = "block";
+        }
+    });
+
+
+
+
+
+    const exportspecfic = document.getElementById("specificationstext")
+    const specificationbutton = document.getElementById("specificationbutton")
+    const containerSpecifications = document.getElementById("containerSpecifications")
+
+    const exportsvariants = document.getElementById("variantstext")
+    const variantsbutton = document.getElementById("variantsbutton")
+    const containervariants = document.getElementById("containervariants")
+
+    const variantsnumber = document.getElementById("variantsnumber")
+    const labelnumber = document.getElementById("labelnumber")
+
+
+
+
+    function addInput(input, container, isvariants) {
+        container.innerHTML = "";
+        let keyspecfic = [];
+        // console.log(input.value);
+
+        if (productData) {
+                    console.log("--------------------------------")
+
+            if (isvariants) {
+                    console.log("--------------------------------")
+
+                if (productData.variants.length > 0) {
+                    keyspecfic = Object.keys(productData.variants[0].attributes);
+                    console.log("--------------------------------")
+                    console.log(keyspecfic)
+                    console.log("--------------------------------")
+                }
+                
+            } else {
+                keyspecfic = productData.specifications;
+                 for (const el of keyspecfic) {
+                    
+                     console.log(el)
+                 }
+                
+
+            }
+
+        } else {
+            keyspecfic = input.value
+                .trim()
+                .split(/\s+/)          // split on one or more spaces
+                .filter(item => item)  // remove empty strings
+                .map(item => item.toLowerCase());
+        }
+
+
+
+
+        if (isvariants) {
+            keyspecfic.push("price", "quantity", "image");
+
+            const variantsNumbers = productData ? productData.variants.length : Number(variantsnumber.value);
+
+            for (let v = 0; v < variantsNumbers; v++) {
+
+                const title = document.createElement("h3");
+                title.textContent = `Variant ${v + 1}`;
+                container.appendChild(title);
+
+                for (let i = 0; i < keyspecfic.length; i++) {
+
+                    const key = keyspecfic[i];
+
+                    const label = document.createElement("label");
+                    label.textContent = key;
+
+                    const value = document.createElement("input");
+                    value.type = "text";
+
+                    if (key === "image") {
+                        value.type = "file";
+                        value.accept = "image/*";
+                        value.required = true;
+                    } else if (key === "price" || key === "quantity") {
+                        value.type = "number";
+                        value.required = true;
+                    }
+                    else {
+                        value.type = "text";
+                    }
+
+                    if (["price", "quantity", "image"].includes(key)) {
+                        value.name = `variants[${v}][${key}]`;
+                    } else {
+                        value.name = `variants[${v}][attributes][${key}]`;
+                    }
+
+                    value.placeholder = key;
+
+                    container.appendChild(label);
+                    container.appendChild(value);
+                    container.appendChild(document.createElement("br"));
+                }
+            }
+
+        } else {
+            const title = document.createElement("h3");
+            title.textContent = `specifications `;
+            container.appendChild(title);
+
+            for (const key of keyspecfic) {
+
+                const label = document.createElement("label");
+                label.textContent = key;
+                  
+                const value = document.createElement("input");
+                value.type = "text";
+                value.name = `specifications[${key}]`;
+
+                container.appendChild(label);
+                container.appendChild(value);
+                container.appendChild(document.createElement("br"));
+                container.appendChild(document.createElement("br"));
+            }
+            // const hr = document.createElement("hr");
+            // container.appendChild(hr);
+        }
+
+
+
+
+    }
+
+
+
+
+
+    specificationbutton.addEventListener("click", function () {
+        addInput(exportspecfic, containerSpecifications, false)
+    })
+
+    variantsbutton.addEventListener("click", function () {
+        addInput(exportsvariants, containervariants, true)
+    })
+
+
+
+</script>

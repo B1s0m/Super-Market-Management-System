@@ -212,5 +212,22 @@ router.get('/veiws', async (req, res) => {
 })
 
 
+router.get("/edit/:id",async (req,res)=>{
+//   console.log("---------------------------------------------")
+//   console.log("id Prodecct : "+ req.params.id)
+//   console.log("---------------------------------------------")
+  const findoneproduct=await Products.findById(req.params.id).populate({
+            path:"subcategory",
+            populate:{
+                path:"category"
+            }
+        });
+            
+  const { categories, subcategories } = await findAllCategories();
+  console.log("product : "+ findoneproduct)
+  res.render("employee/editprodect.ejs",{findoneproduct ,categories,subcategories })
+
+
+})
 
 module.exports = router;
