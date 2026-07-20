@@ -2,7 +2,7 @@ const router = require("express").Router()
 
 
 router.get('/',(req,res)=>{
-    res.render('homepage.ejs')
+    res.render('customer/customerHome.ejs')
 })
 
 router.get('/employee',(req,res)=>{

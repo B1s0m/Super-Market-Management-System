@@ -41,7 +41,7 @@ enum: [
     "employee",
     "delivery",
     "admin"
-  ],    default: "employee"
+  ],    default: "customer"
   }
 
 }, { timestamps: true });
