@@ -23,7 +23,7 @@
         <section class="header">
 
             <h1>
-                Welcome to SuperMarket
+                Welcome to BMJ SuperMarket
             </h1>
 
             <p>
@@ -46,17 +46,19 @@
 
 
             </div>
-
             <div class="categories">
+            <% for (const one of countCatgoty) { %>
 
-                <div class="category"> Fruits</div>
-                <div class="category"> Vegetables</div>
-                <div class="category"> Dairy</div>
-                <div class="category"> Electronics</div>
-                <div class="category"> Bakery</div>
-                <div class="category"> Drinks</div>
 
-            </div>
+
+                    <div class="category">  <a href="/categoryviews/<%=one._id%>"><%= one.name %></a>   </div>
+              
+                    
+                    
+                    
+                    <% } %>
+                    
+                </div>
 
         </section>
 
