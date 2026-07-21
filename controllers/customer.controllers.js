@@ -13,26 +13,25 @@ const Subcategory = require("../models/Subcategory");
 
 
 router.get('/homepage', async (req, res) => {
-    // const countCatgoty= await Category.find()
-    // const getallproducts = await Product.find().populate({
-    //     path: "subcategory",
-    //     populate: {
-    //         path: "category"
-    //     }
-    // });
-            // getallproducts.forEach((k,v) => {
-            //     // console.log(k +" "+ v);
-            //     console.log(k.subcategory.category.name );
+    const countCatgoty= await Category.find()
+    const getallproducts = await Product.find().populate({
+        path: "subcategory",
+        populate: {
+            path: "category"
+        }
+    });
+    //         getallproducts.forEach((k,v) => {
+    //             // console.log(k +" "+ v);
+    //             console.log(k.subcategory.category.name );
 
                 
-            // }); 
-    //    console.log("-----------------------------------");
+    //         }); 
     //   countCatgoty.forEach((k,v) => {
     //             // console.log(k +" "+ v);
     //             console.log(k.name );    
     //         }); 
-    //  res.render('customer/customerHome.ejs', {getallproducts,countCatgoty})
-     res.render("customer/prodectdetails.ejs")
+     res.render('customer/customerHome.ejs', {getallproducts,countCatgoty})
+    //  res.render("customer/prodectdetails.ejs")
 })
 
 
@@ -76,7 +75,7 @@ router.get('/homepage', async (req, res) => {
 router.get("/categoryviews/:id", async (req, res) => {
     try {
         const categoryId = req.params.id;
-
+ 
         console.log(categoryId);
 
         const foundCategory = await Category.findById(categoryId);
