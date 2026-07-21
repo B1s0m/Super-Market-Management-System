@@ -37,6 +37,8 @@ router.get('/new', async (req, res) => {
     const { categories, subcategories } = await findAllCategories();
     res.render('employee/createProducts.ejs', { categories: categories, subcategories: subcategories, error: null, success: null, oldData: null })
 })
+
+
 // this for add prodect 
 router.post('/new', upload.any(), async (req, res) => {
 
@@ -91,7 +93,8 @@ router.post('/new', upload.any(), async (req, res) => {
         }
 
 
-    } else if (req.body.category && !req.body.subcategory) {
+    }
+    else if (req.body.category && !req.body.subcategory) {
         try {
             console.log(req.body.newCategory);
             console.log(req.body.newSubcategory);
@@ -115,7 +118,8 @@ router.post('/new', upload.any(), async (req, res) => {
             });
         }
         // this conditaions no way happens 
-    } else if (!req.body.category && req.body.subcategory) {
+    }
+    else if (!req.body.category && req.body.subcategory) {
         return res.status(400).send("Invalid data");
     }
 
@@ -193,41 +197,135 @@ router.post('/new', upload.any(), async (req, res) => {
 
 
 router.get('/veiws', async (req, res) => {
-     const { categories, subcategories } = await findAllCategories();
+    const { categories, subcategories } = await findAllCategories();
     const limit = 10;
-    const page = Number(req.query.page) || 1 ;
+    const page = Number(req.query.page) || 1;
 
     const skip = (page - 1) * limit;
 
     const findallProducts = await Products.find().skip(skip).limit(limit).populate({
-            path:"subcategory",
-            populate:{
-                path:"category"
-            }
-        });
+        path: "subcategory",
+        populate: {
+            path: "category"
+        }
+    });
     const totalProducts = await Products.countDocuments();
     const totalPages = Math.ceil(totalProducts / limit); //  if i have 4.1  will be 5  is reverse floor
 
-    res.render('employee/productsViews.ejs', { Products: findallProducts  , totalPages:totalPages , page:page ,totalProducts:totalProducts })
+    res.render('employee/productsViews.ejs', { Products: findallProducts, totalPages: totalPages, page: page, totalProducts: totalProducts })
 })
 
 
-router.get("/edit/:id",async (req,res)=>{
-//   console.log("---------------------------------------------")
-//   console.log("id Prodecct : "+ req.params.id)
-//   console.log("---------------------------------------------")
-  const findoneproduct=await Products.findById(req.params.id).populate({
-            path:"subcategory",
-            populate:{
-                path:"category"
-            }
-        });
-            
-  const { categories, subcategories } = await findAllCategories();
-  console.log("product : "+ findoneproduct)
-  res.render("employee/editprodect.ejs",{findoneproduct ,categories,subcategories })
+router.get("/edit/:id", async (req, res) => {
+    //   console.log("---------------------------------------------")
+    //   console.log("id Prodecct : "+ req.params.id)
+    //   console.log("---------------------------------------------")
+    const findoneproduct = await Products.findById(req.params.id).populate({
+        path: "subcategory",
+        populate: {
+            path: "category"
+        }
+    });
+
+    const { categories, subcategories } = await findAllCategories();
+    console.log("product : " + findoneproduct)
+    res.render("employee/editprodect.ejs", { findoneproduct, categories, subcategories })
 
 
 })
+
+
+
+
+
+router.post("/edit/:id", upload.any(), async (req, res) => {
+
+    if (!req.body || !req.files || (!req.body.category && !req.body.newCategory) || !req.body.variants) {
+        return res.redirect(`/products/edit/${req.params.id}`);
+    }
+    /////////////////////////////////////////////////////////////////////////////////////
+    if (!req.body.category && !req.body.subcategory) {
+        try {
+            console.log(req.body.newCategory);
+            console.log(req.body.newSubcategory);
+            const newCategory = await catgoty.create({
+                name: req.body.newCategory
+            })
+            const newSubcategory = await subcatgoty.create({ name: req.body.newSubcategory, category: newCategory._id })
+
+            req.body.category = newCategory._id
+            req.body.subcategory = newSubcategory._id
+
+            console.log("first conditaion " + req.body.newCategory);
+            console.log("first conditaion  " + req.body.newSubcategory);
+
+        } catch (error) {
+            console.log(" this error in first conditaion " + error);
+            const { categories, subcategories } = await findAllCategories();
+            return res.redirect(`/products/edit/${req.params.id}`);
+        }
+
+
+    } else if (req.body.category && !req.body.subcategory) {
+        try {
+            console.log(req.body.newCategory);
+            console.log(req.body.newSubcategory);
+
+            // const newCategory = await catgoty.create(req.body.newCategory)
+
+            const newSubcategory = await subcatgoty.create({ name: req.body.newSubcategory, category: req.body.category })
+
+            req.body.subcategory = newSubcategory._id
+
+            console.log("second conditaion  " + req.body.newSubcategory);
+
+        } catch (error) {
+            const { categories, subcategories } = await findAllCategories();
+            console.log(" this error in second conditaion " + error);
+            return res.redirect(`/products/edit/${req.params.id}`);
+        }
+    } else if (!req.body.category && req.body.subcategory) {
+        return res.status(400).send("Invalid data");
+    }
+
+
+    req.files.forEach(file => {
+        const match = file.fieldname.match(/^variants\[(\d+)\]\[image\]$/);
+        if (match) {
+            const variantIndex = Number(match[1]);
+            req.body.variants[variantIndex].image = file.filename;
+        }
+    });
+     
+         
+    const updateprodect = await Products.findByIdAndUpdate(req.params.id,
+        req.body,{
+        new: true,
+        runValidators: true
+    })
+
+
+        console.log("---------------------------------------------")
+        console.log("updateprodect : " + updateprodect)
+        console.log("---------------------------------------------")
+   
+    res.redirect("/products/veiws")
+
+
+})
+
+
+
+router.delete("/:id", async(req,res)=>{
+ 
+      try {
+        await Products.findByIdAndDelete(req.params.id);
+
+        res.redirect("/products/views");
+    } catch (error) {
+        console.log(error);
+        res.status(500).send("Failed to delete product.");
+    }
+} )
 
 module.exports = router;

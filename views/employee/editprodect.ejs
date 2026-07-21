@@ -13,10 +13,10 @@
     <%- include('../partials/employee/navbar') %>
 
         <div class="container">
-            <h1> Add Prodect</h1>
+            <h1> Edit Product</h1>
 
 
-            <form action="/products/new" method="post" enctype="multipart/form-data">
+            <form action="/products/edit/<%=findoneproduct._id %>" method="post" enctype="multipart/form-data">
 
                 <label for="name">Nmae:</label>
                 <input id="name" type="text" name="name" value="<%= findoneproduct?.name || '' %>" required>
@@ -26,11 +26,8 @@
                     <option value="">Choose Category</option>
 
                     <% categories.forEach(category=> { %>
-                        <option value="<%= category._id %>" <% if ( findoneproduct &&
-                            category._id.toString()==findoneproduct.subcategory.category._id.toString() ) { %>
-                            selected
-                            <% }%> >
-                                <%= category.name %>
+                        <option value="<%= category._id %>">
+                            <%= category.name %>
                         </option>
                         <% }) %>
 
@@ -82,7 +79,7 @@
 
 
                 <label for="labelnumber">How many variants?</label>
-                <input id="variantsnumber" type="number" min="1" placeholder="e.g. 1 at least 1" required>
+                <input id="variantsnumber" type="number" min="1" placeholder="e.g. 1 at least 1">
 
 
                 <label for="variants">Enter all variants (separated by spaces):</label>
@@ -96,10 +93,10 @@
                 <textarea id="content" name="description"><%= findoneproduct?.description || '' %> </textarea>
                 <button type="submit">create parodect</button>
                 <input type="hidden" id="subcategoriesData" value='<%- JSON.stringify(subcategories) %>'>
- 
+
                 <input type="hidden" id="productData" value='<%- JSON.stringify(findoneproduct) %>'>
 
-                </form>
+            </form>
         </div>
 </body>
 
@@ -135,6 +132,21 @@
     labeladdSubcategory.style.display = "none";
     newSubcategory.style.display = "none";
 
+    // function isexistproductData() {
+    //     if (productData) {
+    //         labelSubcategory.style.display = "block";
+    //     selectsubcategory.style.display = "block";
+    //     checkboxSubcategory.style.display = "none";
+    //     labeladdSubcategory.style.display = "none";
+    //     newSubcategory.style.display = "none";
+
+    //         newCategory.style.display = "none";
+    //         selectcategory.style.display = "block";
+    //     }
+
+
+    // }
+    //        isexistproductData()
 
 
 
@@ -210,7 +222,7 @@
         result.forEach(sub => {
 
             const option = document.createElement("option");
-
+            // option.selected = productData?.subcategory._id | null
             option.value = sub._id;
             option.textContent = sub.name;
 
@@ -269,35 +281,53 @@
 
     const variantsnumber = document.getElementById("variantsnumber")
     const labelnumber = document.getElementById("labelnumber")
+    let useExistingData ;
 
+    if (productData ) {
+        addInput(exportsvariants, containervariants, true, true);
+        addInput(exportspecfic, containerSpecifications, false, true);
+    }
 
-
-
-    function addInput(input, container, isvariants) {
+    //   this for create exportspecfic or variants
+    function addInput(input, container, isvariants, useExistingData) {
         container.innerHTML = "";
         let keyspecfic = [];
-        // console.log(input.value);
 
-        if (productData) {
-                    console.log("--------------------------------")
+        if (productData && useExistingData) {
 
             if (isvariants) {
-                    console.log("--------------------------------")
 
                 if (productData.variants.length > 0) {
-                    keyspecfic = Object.keys(productData.variants[0].attributes);
-                    console.log("--------------------------------")
-                    console.log(keyspecfic)
-                    console.log("--------------------------------")
+
+                    keyspecfic = productData.variants.map(variant => [
+                        ...Object.entries(variant.attributes || {}),
+                        ["price", variant.price],
+                        ["quantity", variant.quantity],
+                        ["image", variant.image]
+                    ]);
+
+                    // for (let i = 0; i < keyspecfic.length; i++) {
+                    //     for (let j = 0; j < keyspecfic[0].length; j++) {
+
+                    //         console.log(keyspecfic[i][j][0] + " :" + keyspecfic[i][j][1])
+
+
+                    //     }
+
+
+                    // }
+                    // console.log(keyspecfic)
                 }
-                
+
             } else {
                 keyspecfic = productData.specifications;
-                 for (const el of keyspecfic) {
-                    
-                     console.log(el)
-                 }
-                
+                keyspecfic = Object.entries(productData.specifications);
+                //  for (const one of keyspecfic) {
+
+                //      console.log(one[0]   +"  "+ one[1]     )  ; 
+                //  }
+
+
 
             }
 
@@ -313,9 +343,14 @@
 
 
         if (isvariants) {
-            keyspecfic.push("price", "quantity", "image");
 
-            const variantsNumbers = productData ? productData.variants.length : Number(variantsnumber.value);
+            if (!useExistingData) {
+                keyspecfic.push("price", "quantity", "image");
+            }
+
+            const variantsNumbers = useExistingData
+                ? productData.variants.length
+                : Number(variantsnumber.value);
 
             for (let v = 0; v < variantsNumbers; v++) {
 
@@ -323,26 +358,50 @@
                 title.textContent = `Variant ${v + 1}`;
                 container.appendChild(title);
 
-                for (let i = 0; i < keyspecfic.length; i++) {
+                const fieldsLength = useExistingData
+                    ? keyspecfic[v].length
+                    : keyspecfic.length;
 
-                    const key = keyspecfic[i];
+                for (let i = 0; i < fieldsLength; i++) {
+
+                    const key = useExistingData
+                        ? keyspecfic[v][i][0]
+                        : keyspecfic[i];
+
+                    const oldValue = useExistingData
+                        ? keyspecfic[v][i][1]
+                        : "";
 
                     const label = document.createElement("label");
                     label.textContent = key;
 
                     const value = document.createElement("input");
-                    value.type = "text";
 
                     if (key === "image") {
                         value.type = "file";
                         value.accept = "image/*";
+
+                        if (useExistingData && oldValue) {
+                            label.textContent = `image: ${oldValue}`;
+                        }
                         value.required = true;
-                    } else if (key === "price" || key === "quantity") {
+
+                    } else if (key === "price") {
                         value.type = "number";
+                        value.step = "0.01";
+                        value.min = "0";
+                        value.value = oldValue;
+
                         value.required = true;
-                    }
-                    else {
+                    } else if (key === "quantity") {
+                        value.type = "number";
+                        value.step = "1";
+                        value.min = "0";
+                        value.value = oldValue;
+                        value.required = true;
+                    } else {
                         value.type = "text";
+                        value.value = oldValue;
                     }
 
                     if (["price", "quantity", "image"].includes(key)) {
@@ -358,7 +417,6 @@
                     container.appendChild(document.createElement("br"));
                 }
             }
-
         } else {
             const title = document.createElement("h3");
             title.textContent = `specifications `;
@@ -367,12 +425,12 @@
             for (const key of keyspecfic) {
 
                 const label = document.createElement("label");
-                label.textContent = key;
-                  
+                label.textContent =  useExistingData ? key[0] : key;
+
                 const value = document.createElement("input");
                 value.type = "text";
-                value.name = `specifications[${key}]`;
-
+                value.name =  useExistingData ? `specifications[${key[0]}]` : `specifications[${key}]`;
+                value.value =  useExistingData ? key[1] : "";
                 container.appendChild(label);
                 container.appendChild(value);
                 container.appendChild(document.createElement("br"));
@@ -392,11 +450,11 @@
 
 
     specificationbutton.addEventListener("click", function () {
-        addInput(exportspecfic, containerSpecifications, false)
+        addInput(exportspecfic, containerSpecifications, false, false)
     })
 
     variantsbutton.addEventListener("click", function () {
-        addInput(exportsvariants, containervariants, true)
+        addInput(exportsvariants, containervariants, true, false)
     })
 
 

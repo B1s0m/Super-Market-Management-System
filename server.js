@@ -1,7 +1,7 @@
 // imports
 //  this for my pc 
-// const dns = require('dns');
-// dns.setServers(['8.8.8.8', '1.1.1.1']);
+const dns = require('dns');
+dns.setServers(['8.8.8.8', '1.1.1.1']);
 
 const express = require("express") //importing express package
 const app = express() // creates a express application
@@ -21,9 +21,12 @@ const authController = require("./controllers/auth.controllers.js");
 const indexController = require("./controllers/index.controllers.js");
 const employeeController = require("./controllers/employee.controllers.js");
 const customerController = require("./controllers/customer.controllers.js");
+const path = require("path");
 
 
 // Middleware
+
+app.use("/image", express.static(path.join(__dirname, "image")));
 app.use(express.static('public')) // my app will serve all static files from public folder
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'))
