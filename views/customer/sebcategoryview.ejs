@@ -22,7 +22,7 @@
 
         <main class="page-container">
 
-        
+
             <div class="breadcrumb">
 
                 <a href="/homepage">
@@ -38,7 +38,7 @@
             </div>
 
 
-          
+
             <section class="category-header">
 
                 <div>
@@ -51,7 +51,7 @@
                     </h1>
 
                     <p class="product-count">
-                        <%= products.length %>
+                        <%= totalProducts %>
                             <%= products.length===1 ? "product" : "products" %>
                                 available
                     </p>
@@ -62,13 +62,13 @@
 
             <section class="subcategory-section">
 
-                
+
 
 
                 <div class="subcategory-list">
 
                     <a href="/categoryviews/<%= category._id %>" class="subcategory-card active">
-                      
+
                         <span>
                             All Products
                         </span>
@@ -77,8 +77,8 @@
 
                     <% subcategories.forEach(subcategory=> { %>
 
-                        <a href="/subcategoryviews/<%= subcategory._id %>" class="subcategory-card">
-                            
+                        <a href="#" class="subcategory-card">
+
                             <span>
                                 <%= subcategory.name %>
                             </span>
@@ -91,10 +91,10 @@
             </section>
 
 
-           
+
             <section class="products-section">
 
-            
+
 
                 <% if (products.length> 0) { %>
 
@@ -129,6 +129,7 @@
                                 </a>
 
 
+
                                 <div class="product-content">
 
                                     <p class="product-subcategory">
@@ -136,7 +137,7 @@
                                     </p>
 
 
-                                    <a href="/products/details/<%= product._id %>" class="product-name">
+                                    <a href="/details/<%= product._id %>" class="product-name">
                                         <%= product.name %>
                                     </a>
 
@@ -149,43 +150,65 @@
                                     </p>
 
 
+
                                     <div class="price-row">
 
-                                        <div>
-                                            <% if ( product.discount && product.discount> 0
-                                                ) { %>
 
-                                                <span class="old-price">
-                                                    $<%= Number(product.price || 0).toFixed(2) %> </span>
+                                        <% // some opeartion for take price and discount const
+                                            variantPrices=product.variants .map((variant)=> Number(variant.price))
 
-                                                <p class="product-price">
-                                                    $<%= ( product.price - product.price * product.discount / 100
-                                                        ).toFixed(2) %>
-                                                </p>
+                                            // this like Math.min( variantPrices[0] ,variantPrices[1],..)
+                                            const cheapestPrice = variantPrices.length > 0 ? Math.min(...variantPrices)
+                                            : 0;
+
+                                            const finalPrice = cheapestPrice - (cheapestPrice * product.discount / 100);
+
+                                            const variantquantity=product.variants .map((variant)=> Number(variant.quantity))
+
+                                             const cheapestquantity = variantquantity.length > 0 ? Math.min(...variantquantity)
+                                            : 0;
+         
+
+
+
+
+
+                                            %>
+                                            <div>
+                                                <% if ( product.discount && product.discount> 0
+                                                    ) { %>
+
+                                                    <span class="old-price">
+                                                        <%= cheapestPrice.toFixed(2) %> BHD
+                                                    </span>
+
+                                                    <p class="product-price">
+                                                        <%= finalPrice.toFixed(2) %> BHD
+                                                    </p>
+
+                                                    <% } else { %>
+
+                                                        <p class="product-price">
+                                                            <%= cheapestPrice.toFixed(2) %> BHD
+                                                        </p>
+
+                                                        <% } %>
+                                            </div>
+
+
+                                            <% if (cheapestquantity> 0) { %>
+
+                                                <span class="stock available">
+                                                    In Stock
+                                                </span>
 
                                                 <% } else { %>
 
-                                                    <p class="product-price">
-                                                        $<%= Number(product.price || 0).toFixed(2) %>
-                                                    </p>
+                                                    <span class="stock unavailable">
+                                                        Out of Stock
+                                                    </span>
 
                                                     <% } %>
-                                        </div>
-
-
-                                        <% if (product.quantity> 0) { %>
-
-                                            <span class="stock available">
-                                                In Stock
-                                            </span>
-
-                                            <% } else { %>
-
-                                                <span class="stock unavailable">
-                                                    Out of Stock
-                                                </span>
-
-                                                <% } %>
 
                                     </div>
 
@@ -229,6 +252,26 @@
 
             </section>
 
+                  
+            <div class="pagination">
+
+                <% if(page> 1){ %>
+                    <a href="?page=<%= page-1 %>">Previous</a>
+                    <% } %>
+
+                        <% for(let i=1; i <=totalPages; i++){ %>
+
+                            <a href="?page=<%= i %>" class="<%= page === i ? 'active' : '' %>">
+                                <%= i %>
+                            </a>
+
+                            <% } %>
+
+                                <% if(page < totalPages){ %>
+                                    <a href="?page=<%= page+1 %>">Next</a>
+                                    <% } %>
+
+            </div>
         </main>
 
 </body>

@@ -1,110 +1,245 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <link rel="stylesheet" href="/css/customer/prodectdetails.css">
     <link rel="stylesheet" href="/css/customer/navbar.css">
-    <title>Document</title>
+
+    <title>
+        <%= product.name %>
+    </title>
 </head>
 
 <body>
 
     <%- include('../partials/customer/navbar') %>
 
-        <h1>prodect details</h1>
+        <h1>Product Details</h1>
+
         <div class="product-container">
 
-            <!-- Left -->
+            <!-- Left: Images -->
             <div class="gallery">
 
-                <img class="main-image" src="https://via.placeholder.com/500x500" alt="">
+                <% const firstImage=product.variants?.[0]?.image || "placeholder.jpg" ; %>
 
-                <div class="thumbnails">
+                    <img class="main-image" id="mainImage" src="/image/product/<%=firstImage %>" alt="<%= product.name %>">
 
-                    <img src="https://via.placeholder.com/90" alt="">
-                    <img src="https://via.placeholder.com/90" alt="">
-                    <img src="https://via.placeholder.com/90" alt="">
-                    <img src="https://via.placeholder.com/90" alt="">
-                    <img src="https://via.placeholder.com/90" alt="">
+                    <div class="thumbnails">
 
-                </div>
+                        <% product.variants.forEach((variant, index)=> { %>
+
+                            <% if (variant.image) { %>
+
+                                <img src="/uploads/<%= variant.image %>"
+                                    alt="<%= product.name %> variant <%= index + 1 %>" onclick="changeImage(this.src)">
+
+                                <% } %>
+
+                                    <% }) %>
+
+                    </div>
 
             </div>
 
 
-            <!-- Center -->
+            <!-- Center: Product information -->
             <div class="product-info">
 
-                <h1>iPhone 16 Pro Max</h1>
+                <h1>
+                    <%= product.name %>
+                </h1>
 
                 <p class="brand">
-                    Apple
+                    Brand: <%= product.brand %>
                 </p>
 
                 <div class="rating">
-                  veiws : 4165
+                    Views: <%= product.views %>
                 </div>
 
-                <div class="price">
-                    999 BH
-                </div>
+                <% const cheapestPrice=Math.min( ...product.variants.map( variant=> variant.price
+                    )
+                    );
+                    %>
 
-                <h3>Variants</h3>
+                    <div class="price">
+                        From <%= cheapestPrice.toFixed(2) %> BHD
+                    </div>
 
-                <div class="variants">
 
-                    <button>Black</button>
-                    <button>White</button>
-                    <button>Blue</button>
+                    <h3>Variants</h3>
 
-                </div>
+                    <div class="variants">
 
-                <h3>Storage</h3>
+                        <% product.variants.forEach((variant, index)=> { %>
 
-                <div class="variants">
+                            <button type="button" class="variant-button" id="<%= index %>">
 
-                    <button>128 GB</button>
-                    <button>256 GB</button>
-                    <button>512 GB</button>
+                                <% Object.entries(variant.attributes || {}).forEach(([key, value])=> { %>
 
-                </div>
+                                    <span>
+                                        <%= key %>: <%= value %>
+                                    </span>
 
-                <h3>Description</h3>
+                                    <% }) %>
 
-                <p>
-                    The latest iPhone with A18 chip, OLED display,
-                    high-performance camera system, and long battery life.
-                </p>
+                            </button>
+
+                            <% }) %>
+
+                    </div>
+
+
+                    <h3>Description</h3>
+
+                    <p>
+                        <%= product.description %>
+                    </p>
+
+
+                    <h3>Specifications</h3>
+
+                    <div class="specifications">
+
+                        <% Object.entries(product.specifications || {}).forEach(([key, value])=> { %>
+
+                            <p>
+                                <strong>
+                                    <%= key %>:
+                                </strong>
+                                <%= value %>
+                            </p>
+
+                            <% }) %>
+
+                    </div>
 
             </div>
 
 
-            <!-- Right -->
+            <!-- Right: Buy box -->
             <div class="buy-box">
 
-                <h2>999 BH</h2>
+                <h2 id="variantPrice">
+                    <%= product.variants[0].price.toFixed(2) %> BHD
+                </h2>
 
-                <p class="stock">
-                    ✔ In Stock
+                <p class="stock" id="stockStatus">
+                    <% if (product.variants[0].quantity> 0) { %>
+                        ✔ In Stock
+                        <% } else { %>
+                            ✖ Out of Stock
+                            <% } %>
                 </p>
 
-                <label>Quantity</label>
+                <form action="/cart/add" method="POST">
 
-                <input type="number" value="1" min="1">
+                    <input type="hidden" name="productId" value="<%= product._id %>">
 
-                <button class="cart-btn">
-                    🛒 Add To Cart
-                </button>
+                    <input type="hidden" id="variantIndex" name="variantIndex" value="0">
 
-                <button class="buy-btn">
+                    <label for="quantity">
+                        Quantity
+                    </label>
+
+                    <input id="quantity" type="number" name="quantity" value="1" min="1"
+                        max="<%= product.variants[0].quantity %>" required>
+
+                    <button class="cart-btn" type="submit">
+                        🛒 Add To Cart
+                    </button>
+
+                </form>
+
+                <button class="buy-btn" type="button">
                     Buy Now
                 </button>
 
             </div>
-
+            <input type="hidden" id="variants" value="<%- JSON.stringify(product.variants) %>;">
         </div>
+
+
+        <script>
+
+            const variants = JSON.parse(
+                document.getElementById("variants").value
+            );
+
+
+
+            function changeImage(imageSource) {
+
+                document.querySelector("#mainImage").src =
+                    imageSource;
+
+            }
+
+
+            function selectVariant(index) {
+
+                const selectedVariant = variants[index];
+
+                document.querySelector("#variantIndex").value =
+                    index;
+
+                document.querySelector("#variantPrice").textContent =
+                    Number(selectedVariant.price).toFixed(2) + " BHD";
+
+                const stockStatus =
+                    document.querySelector("#stockStatus");
+
+                const quantityInput =
+                    document.querySelector("#quantity");
+
+                quantityInput.max =
+                    selectedVariant.quantity;
+
+                if (selectedVariant.quantity > 0) {
+
+                    stockStatus.textContent =
+                        "✔ In Stock";
+
+                    quantityInput.disabled =
+                        false;
+
+                } else {
+
+                    stockStatus.textContent =
+                        "✖ Out of Stock";
+
+                    quantityInput.disabled =
+                        true;
+
+                }
+
+                if (selectedVariant.image) {
+
+                    document.querySelector("#mainImage").src =
+                        "/uploads/" + selectedVariant.image;
+
+                }
+
+                document
+                    .querySelectorAll(".variant-button")
+                    .forEach(button => {
+                        button.classList.remove("selected");
+                    });
+
+                document
+                    .querySelectorAll(".variant-button")[index]
+                    .classList.add("selected");
+
+            }
+
+        </script>
+
 </body>
 
 </html>
+```

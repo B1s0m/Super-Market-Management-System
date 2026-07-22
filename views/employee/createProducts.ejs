@@ -13,12 +13,12 @@
     <%- include('../partials/employee/navbar') %>
 
         <div class="container">
-            <h1>  Add Prodect</h1>
+            <h1> Add Prodect</h1>
             <% if (error) { %>
                 <p style="color: brown;  text-align: center; ">
                     <%= error %>
                 </p>
-                <% } else { %>
+                <% } else { %>  
                     <p style="color: green;  text-align: center; ">
                         <%= success %>
                     </p>
@@ -34,7 +34,7 @@
                                 <option value="">Choose Category</option>
 
                                 <% categories.forEach(category=> { %>
-                                    <option value="<%= category._id %>" >
+                                    <option value="<%= category._id %>">
                                         <%= category.name %>
                                     </option>
                                     <% }) %>
@@ -48,12 +48,12 @@
                             </label>
 
 
-                            <input type="text" id="newCategory" name="newCategory"    placeholder="New Category Name"
+                            <input type="text" id="newCategory" name="newCategory" placeholder="New Category Name"
                                 style="display:none;">
 
                             <label id="labelSubcategory">Subcategory</label>
 
-                            <select id="selectsubcategory" name="subcategory" >
+                            <select id="selectsubcategory" name="subcategory">
                                 <option value="">Choose Category</option>
 
 
@@ -65,7 +65,7 @@
                             </label>
 
 
-                            <input type="text" id="newSubcategory" name="newSubcategory"   
+                            <input type="text" id="newSubcategory" name="newSubcategory"
                                 placeholder="New Subcategory Name" style="display:none;">
 
 

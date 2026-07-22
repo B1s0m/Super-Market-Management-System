@@ -18,14 +18,14 @@
 
     <%- include('../partials/customer/navbar') %>
 
-
-
+        <main class="page-container">
+       
         <section class="header">
 
             <h1>
                 Welcome to BMJ SuperMarket
             </h1>
-
+           
             <p>
                 Everything you need in one place
             </p>
@@ -37,7 +37,7 @@
 
 
 
-        <!-- Categories -->
+
         <section class="section">
 
             <div class="section-header">
@@ -47,9 +47,13 @@
 
             </div>
             <div class="categories">
+
+               
+                 
+
             <% for (const one of countCatgoty) { %>
 
-
+                 
 
                  <a href="/categoryviews/<%=one._id%>">    <div class="category">  <%= one.name %>   </div> </a>
               
@@ -62,14 +66,94 @@
 
         </section>
 
-        <!-- Featured Products -->
+   
+        <section class="section">
+
+            <div class="section-header">
+
+                <h2>Offers</h2>
+
+                    <div class="section-actions">
+
+                    <button class="arrow">&#10094;</button>
+
+                    <button class="arrow">&#10095;</button>
+
+                    <a href="#">View All →</a>
+
+                </div>
+
+            </div>
+
+            <div class="products">
+
+                <div class="card">
+
+                    <img src="" alt="">
+
+                    <h3>iPhone 16</h3>
+
+                    <div class="stars">view: 132</div>
+
+                    <p class="price">999 BH</p>
+
+                    <button>Add to Cart</button>
+
+                </div>
+
+                <div class="card">
+
+                    <img src="" alt="">
+
+                    <h3>Milk</h3>
+
+                    <div class=" stars"> view: 59
+                    </div>
+
+                    <p class="price">1.50 BH</p>
+
+                    <button>Add to Cart</button>
+
+                </div>
+
+                <div class="card">
+
+                    <img src="" alt="">
+
+                    <h3>Nike Shoes</h3>
+
+                    <div class="stars"> view: 56</div>
+
+                    <p class="price">30 BH</p>
+
+                    <button>Add to Cart</button>
+
+                </div>
+
+                <div class="card">
+
+                    <img src="" alt="">
+
+                    <h3>Laptop</h3>
+
+                    <div class="stars">view: 52</div>
+
+                    <p class="price">450 BH</p>
+
+                    <button class="addcart" > Add to Cart</button>
+
+                </div>
+
+            </div>
+
+        </section>
         <section class="section">
 
             <div class="section-header">
 
                 <h2>Featured Products</h2>
 
-                <div class="section-actions">
+                    <div class="section-actions">
 
                     <button class="arrow">&#10094;</button>
 
@@ -144,51 +228,55 @@
 
         </section>
 
-        <!-- New Products -->
+        <!------------------------------------- -->
         <section class="section">
 
             <div class="section-header">
 
-                <h2>New Products</h2>
+                <h2>New Arrivals</h2>
 
                 <a href="#">View All →</a>
 
             </div>
 
             <div class="products">
-
+                <% for (const offer of offers) { %>
+                    
                 <div class="card">
+                    
                     <img src="" alt="">
-                    <h3>Chocolate</h3>
-                    <p class="price">2.50 BH</p>
+                    <h3><%=offer.name%></h3>
+                    <p class="price">XXXXX BH</p>
                     <button>Add to Cart</button>
                 </div>
+                             <%  } %>
 
-                <div class="card">
+                <!-- <div class="card">
                     <img src="" alt="">
                     <h3>Orange Juice</h3>
                     <p class="price">1.80 BH</p>
                     <button>Add to Cart</button>
-                </div>
+                </div> -->
 
-                <div class="card">
+                <!-- <div class="card">
                     <img src="" alt="">
                     <h3>Headphones</h3>
                     <p class="price">35 BH</p>
                     <button>Add to Cart</button>
-                </div>
+                </div> -->
 
-                <div class="card">
+                <!-- <div class="card">
                     <img src="" alt="">
                     <h3>Cheese</h3>
                     <p class="price">4 BH</p>
                     <button>Add to Cart</button>
-                </div>
+                </div> -->
 
             </div>
 
         </section>
-
+        
+         </main>
 
 
         <footer>
