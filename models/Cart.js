@@ -22,6 +22,16 @@ const cartSchema = new mongoose.Schema({
         default: 1,
         min: 1
       }
+
+       , variantIndex: {
+            type: Number,
+            required: true,
+            min: 0
+        },priceAtAdd: {
+            type: Number,
+            required: true,
+            min: 0
+        }
     }
   ],
  totalPrice: {

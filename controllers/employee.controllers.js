@@ -176,7 +176,8 @@ router.post('/new', upload.any(), async (req, res) => {
             categories,
             subcategories,
             success: "Product created successfully.",
-            error: null
+            error: null ,  oldData: req.body
+
         });
 
     } catch (error) {
