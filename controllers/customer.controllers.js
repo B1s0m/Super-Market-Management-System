@@ -465,7 +465,7 @@ router.post("/checkout", async (req, res) => {
 
         await Cart.deleteOne({ _id: cart._id });
 
-        res.redirect(`/orders/${order._id}`);
+        res.redirect("/orders");
 
     } catch (error) {
 
