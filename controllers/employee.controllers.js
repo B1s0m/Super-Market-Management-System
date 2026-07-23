@@ -136,19 +136,19 @@ router.post('/new', upload.any(), async (req, res) => {
     //     variants: req.body.variants
     // };
     //    save image in variants `  
-    req.files.forEach(file => {
+    req.files.forEach(file => {                   
         const match = file.fieldname.match(/^variants\[(\d+)\]\[image\]$/);
         if (match) {
             const variantIndex = Number(match[1]);
             req.body.variants[variantIndex].image = file.filename;
         }
     });
-    console.log("----------------------------------------------------------------------");
+    // console.log("----------------------------------------------------------------------");
 
-    console.log(req.body);
+    // console.log(req.body);
 
 
-    console.log("----------------------------------------------------------------------");
+    // console.log("----------------------------------------------------------------------");
 
 
 

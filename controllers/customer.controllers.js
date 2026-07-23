@@ -154,12 +154,9 @@ router.post("/cart/add", async (req, res) => {
         const variantIndex = Number(req.body.variantIndex);
         const quantity = Number(req.body.quantity);
 
-        // Change this depending on how you store the logged-in user
         const userId = req.session.user?._id;
 
-        if (!userId) {
-            return res.status(401).send("You must log in first");
-        }
+       
 
         if (
             !productId ||
@@ -173,23 +170,15 @@ router.post("/cart/add", async (req, res) => {
 
         const product = await Product.findById(productId);
 
-        if (!product) {
-            return res.status(404).send("Product not found");
-        }
-
+        
         const selectedVariant = product.variants[variantIndex];
 
-        if (!selectedVariant) {
-            return res.status(400).send("Invalid product variant");
-        }
+        
 
         const variantStock = Number(selectedVariant.quantity);
         const variantPrice = Number(selectedVariant.price);
 
-        if (!Number.isFinite(variantPrice)) {
-            return res.status(400).send("Invalid product price");
-        }
-
+       
         if (quantity > variantStock) {
             return res.status(400).send("Not enough stock");
         }
@@ -234,10 +223,7 @@ router.post("/cart/add", async (req, res) => {
             });
         }
 
-        /*
-          Fix old cart items created before variantIndex
-          or priceAtAdd were added to the schema.
-        */
+      
         const validItems = [];
 
         for (const item of cart.items) {
@@ -392,17 +378,14 @@ router.post("/cart/remove/:itemId", async (req, res) => {
             return res.status(404).send("Cart not found");
         }
 
-        // Find the item in the cart
         const item = cart.items.id(itemId);
 
         if (!item) {
             return res.status(404).send("Cart item not found");
         }
 
-        // Remove the item
         item.deleteOne();
 
-        // Recalculate total price
         cart.totalPrice = cart.items.reduce((total, cartItem) => {
             return total + (cartItem.priceAtAdd * cartItem.quantity);
         }, 0);
@@ -424,7 +407,6 @@ router.post("/checkout", async (req, res) => {
 
         const userId = req.session.user._id;
 
-        // Find user's cart
         const cart = await Cart.findOne({ user: userId });
 
         if (!cart || cart.items.length === 0) {
@@ -434,7 +416,6 @@ router.post("/checkout", async (req, res) => {
         const orderItems = [];
         let totalPrice = 0;
 
-        // Check stock first
         for (const item of cart.items) {
 
             const product = await Product.findById(item.product);
@@ -456,14 +437,12 @@ router.post("/checkout", async (req, res) => {
             }
         }
 
-        // Everything is valid, create order
         for (const item of cart.items) {
 
             const product = await Product.findById(item.product);
 
             const variant = product.variants[item.variantIndex];
 
-            // Reduce stock
             variant.quantity -= item.quantity;
 
             await product.save();
@@ -478,14 +457,12 @@ router.post("/checkout", async (req, res) => {
             totalPrice += item.priceAtAdd * item.quantity;
         }
 
-        // Create order
         const order = await Order.create({
             user: userId,
             items: orderItems,
             totalPrice: totalPrice
         });
 
-        // Delete cart
         await Cart.deleteOne({ _id: cart._id });
 
         res.redirect(`/orders/${order._id}`);
