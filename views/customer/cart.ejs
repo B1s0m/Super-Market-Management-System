@@ -4,10 +4,7 @@
 <head>
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/customer/navbar.css">
 
     <title>My Cart</title>
@@ -19,285 +16,234 @@
 
     <%- include('../partials/customer/navbar') %>
 
-    <main class="cart-page">
+        <main class="cart-page">
 
-        <div class="cart-header">
+            <div class="cart-header">
 
-            <div>
-                <h1>Shopping Cart</h1>
+                <div>
+                    <h1>Shopping Cart</h1>
 
-                <p>
-                    Review your products before checkout.
-                </p>
-            </div>
 
-            <a
-                href="/"
-                class="continue-shopping"
-            >
-                Continue Shopping
-            </a>
-
-        </div>
-
-        <% if (!cart || cart.items.length === 0) { %>
-
-            <section class="empty-cart">
-
-                <div class="empty-cart-icon">
-                    🛒
                 </div>
 
-                <h2>Your cart is empty</h2>
-
-                <p>
-                    You have not added any products yet.
-                </p>
-
-                <a
-                    href="/"
-                    class="shopping-button"
-                >
-                    Start Shopping
+                <a href="/" class="continue-shopping">
+                    Continue Shopping
                 </a>
 
-            </section>
+            </div>
 
-        <% } else { %>
+            <% if (!cart || cart.items.length===0) { %>
 
-            <div class="cart-layout">
+                <section class="empty-cart">
 
-                <section class="cart-items">
+                   
+                    <h2>Your cart is empty</h2>
 
-                    <% cart.items.forEach((item) => { %>
+                   
 
-                        <%
-                            const product = item.product;
-
-                            const variant =
-                                product &&
-                                product.variants &&
-                                product.variants[item.variantIndex];
-
-                            const price =
-                                Number(item.priceAtAdd || variant?.price || 0);
-
-                            const quantity =
-                                Number(item.quantity || 1);
-
-                            const subtotal =
-                                price * quantity;
-
-                            const image =
-                                variant?.image || "";
-                        %>
-
-                        <% if (product && variant) { %>
-
-                            <article class="cart-item">
-
-                                <div class="product-image">
-
-                                    <% if (image) { %>
-
-                                        <img
-                                            src="/image/product/<%= image %>"
-                                            alt="<%= product.name %>"
-                                        >
-
-                                    <% } else { %>
-
-                                        <div class="no-image">
-                                            No image
-                                        </div>
-
-                                    <% } %>
-
-                                </div>
-
-                                <div class="product-information">
-
-                                    <div class="product-top">
-
-                                        <div>
-
-                                            <p class="product-brand">
-                                                <%= product.brand %>
-                                            </p>
-
-                                            <h2>
-                                                <a href="/products/details/<%= product._id %>">
-                                                    <%= product.name %>
-                                                </a>
-                                            </h2>
-
-                                        </div>
-
-                                        <form
-                                            action="/cart/remove/<%= item._id %>"
-                                            method="POST"
-                                        >
-                                            <button
-                                                type="submit"
-                                                class="remove-button"
-                                            >
-                                                Remove
-                                            </button>
-                                        </form>
-
-                                    </div>
-
-                                    <div class="variant-details">
-
-                                        <% Object.entries(variant.attributes || {}).forEach(([key, value]) => { %>
-
-                                            <span class="variant-value">
-
-                                                <strong>
-                                                    <%= key %>:
-                                                </strong>
-
-                                                <%= value %>
-
-                                            </span>
-
-                                        <% }) %>
-
-                                    </div>
-
-                                    <div class="cart-item-bottom">
-
-                                        <div class="quantity-section">
-
-                                            <span class="quantity-label">
-                                                Quantity
-                                            </span>
-
-                                            <form
-                                                action="/cart/update/<%= item._id %>"
-                                                method="POST"
-                                                class="quantity-form"
-                                            >
-
-                                                <input
-                                                    type="number"
-                                                    name="quantity"
-                                                    value="<%= quantity %>"
-                                                    min="1"
-                                                    max="<%= variant.quantity %>"
-                                                >
-
-                                                <button type="submit">
-                                                    Update
-                                                </button>
-
-                                            </form>
-
-                                            <small>
-                                                <%= variant.quantity %> available
-                                            </small>
-
-                                        </div>
-
-                                        <div class="price-section">
-
-                                            <p class="unit-price">
-                                                BHD <%= price.toFixed(2) %> each
-                                            </p>
-
-                                            <p class="item-subtotal">
-                                                BHD <%= subtotal.toFixed(2) %>
-                                            </p>
-
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
-                            </article>
-
-                        <% } %>
-
-                    <% }) %>
+                    <a href="/" class="shopping-button">
+                        Start Shopping
+                    </a>
 
                 </section>
 
-                <aside class="order-summary">
+                <% } else { %>
 
-                    <h2>Order Summary</h2>
+                    <div class="cart-layout">
 
-                    <div class="summary-row">
+                        <section class="cart-items">
 
-                        <span>
-                            Products
-                        </span>
+                            <% cart.items.forEach((item)=> { %>
 
-                        <span>
-                            <%= cart.items.length %>
-                        </span>
+                                <% const product=item.product; const variant=product && product.variants &&
+                                    product.variants[item.variantIndex]; const price=Number(item.priceAtAdd ||
+                                    variant?.price || 0); const quantity=Number(item.quantity || 1); const
+                                    subtotal=price * quantity; const image=variant?.image || "" ; %>
+
+                                    <% if (product && variant) { %>
+
+                                        <article class="cart-item">
+
+                                            <div class="product-image">
+
+                                                <% if (image) { %>
+
+                                                    <img src="/image/product/<%= image %>" alt="<%= product.name %>">
+
+                                                    <% } else { %>
+
+                                                        <div class="no-image">
+                                                            No image
+                                                        </div>
+
+                                                        <% } %>
+
+                                            </div>
+
+                                            <div class="product-information">
+
+                                                <div class="product-top">
+
+                                                    <div>
+
+                                                        <p class="product-brand">
+                                                            <%= product.brand %>
+                                                        </p>
+
+                                                        <h2>
+                                                            <a href="/details/<%= product._id %>">
+                                                                <%= product.name %>
+                                                            </a>
+                                                        </h2>
+
+                                                    </div>
+
+                                                    <form action="/cart/remove/<%= item._id %>" method="POST">
+                                                        <button type="submit" class="remove-button">
+                                                            Remove
+                                                        </button>
+                                                    </form>
+
+                                                </div>
+
+                                                <div class="variant-details">
+
+                                                    <% Object.entries(variant.attributes || {}).forEach(([key, value])=>
+                                                        { %>
+
+                                                        <span class="variant-value">
+
+                                                            <strong>
+                                                                <%= key %>:
+                                                            </strong>
+
+                                                            <%= value %>
+
+                                                        </span>
+
+                                                        <% }) %>
+
+                                                </div>
+
+                                                <div class="cart-item-bottom">
+
+                                                    <div class="quantity-section">
+
+                                                        <span class="quantity-label">
+                                                            Quantity
+                                                        </span>
+
+                                                        <form action="/cart/update/<%= item._id %>" method="POST"
+                                                            class="quantity-form">
+
+                                                            <input type="number" name="quantity" value="<%= quantity %>"
+                                                                min="1" max="<%= variant.quantity %>">
+
+                                                            <button type="submit">
+                                                                Update
+                                                            </button>
+
+                                                        </form>
+
+                                                        <small>
+                                                            <%= variant.quantity %> available
+                                                        </small>
+
+                                                    </div>
+
+                                                    <div class="price-section">
+
+                                                        <p class="unit-price">
+                                                            BHD <%= price.toFixed(2) %> each
+                                                        </p>
+
+                                                        <p class="item-subtotal">
+                                                            BHD <%= subtotal.toFixed(2) %>
+                                                        </p>
+
+                                                    </div>
+
+                                                </div>
+
+                                            </div>
+
+                                        </article>
+
+                                        <% } %>
+
+                                            <% }) %>
+
+                        </section>
+
+                        <aside class="order-summary">
+
+                            <h2>Order Summary</h2>
+
+                            <div class="summary-row">
+
+                                <span>
+                                    Products
+                                </span>
+
+                                <span>
+                                    <%= cart.items.reduce((total, item)=> total + item.quantity, 0) %>
+                                </span>
+
+                            </div>
+
+                            <div class="summary-row">
+
+                                <span>
+                                    Subtotal
+                                </span>
+
+                                <span>
+                                    BHD <%= Number(cart.totalPrice || 0).toFixed(2) %>
+                                </span>
+
+                            </div>
+
+                            <div class="summary-row">
+
+                                <span>
+                                    Delivery
+                                </span>
+
+                                <span class="free-delivery">
+                                    Free
+                                </span>
+
+                            </div>
+
+                            <div class="summary-divider"></div>
+
+                            <div class="summary-total">
+
+                                <span>
+                                    Total
+                                </span>
+
+                                <span>
+                                    BHD <%= Number(cart.totalPrice || 0).toFixed(2) %>
+                                </span>
+
+                            </div>
+                            <form action="/checkout" method="post" >
+                                  
+                                <button class="checkout-button" >Proceed to Checkout </button>
+                              
+
+                            </form>
+
+
+
+                        </aside>
 
                     </div>
 
-                    <div class="summary-row">
+                    <% } %>
 
-                        <span>
-                            Subtotal
-                        </span>
-
-                        <span>
-                            BHD <%= Number(cart.totalPrice || 0).toFixed(2) %>
-                        </span>
-
-                    </div>
-
-                    <div class="summary-row">
-
-                        <span>
-                            Delivery
-                        </span>
-
-                        <span class="free-delivery">
-                            Free
-                        </span>
-
-                    </div>
-
-                    <div class="summary-divider"></div>
-
-                    <div class="summary-total">
-
-                        <span>
-                            Total
-                        </span>
-
-                        <span>
-                            BHD <%= Number(cart.totalPrice || 0).toFixed(2) %>
-                        </span>
-
-                    </div>
-
-                    <a
-                        href="/checkout"
-                        class="checkout-button"
-                    >
-                        Proceed to Checkout
-                    </a>
-
-                    <a
-                        href="/"
-                        class="summary-shopping-link"
-                    >
-                        Continue Shopping
-                    </a>
-
-                </aside>
-
-            </div>
-
-        <% } %>
-
-    </main>
+        </main>
 
 </body>
 

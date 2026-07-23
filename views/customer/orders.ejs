@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>My Orders</title>
+    <link rel="stylesheet" href="/css/customer/navbar.css">
+
+    <link
+        rel="stylesheet"
+        href="/css/customer/order.css"
+    >
+</head>
+
+<body>
+
+    <%- include('../partials/customer/navbar') %>
+
+    <main class="orders-page">
+
+        <div class="orders-header">
+
+            <div>
+                <h1>My Orders</h1>
+
+                
+            </div>
+
+            <a
+                href="/homepage"
+                class="continue-shopping"
+            >
+                Continue Shopping
+            </a>
+
+        </div>
+
+        <% if (!orders || orders.length === 0) { %>
+
+            <section class="empty-orders">
+
+
+                <h2>No orders yet</h2>
+
+               
+                <a
+                    href="/homepage"
+                    class="shopping-button"
+                >
+                    Start Shopping
+                </a>
+
+            </section>
+
+        <% } else { %>
+
+            <section class="orders-list">
+
+                <% orders.forEach((order) => { %>
+
+                    <article class="order-card">
+
+                        <div class="order-top">
+
+                            <div class="order-information">
+
+                                <div>
+                                    <span class="label">
+                                        Order
+                                    </span>
+
+                                    <strong>
+                                        #<%= order._id.toString().slice(-6).toUpperCase() %>
+                                    </strong>
+                                </div>
+
+                                <div>
+                                    <span class="label">
+                                        Date
+                                    </span>
+
+                                    <strong>
+                                        <%= new Date(order.createdAt).toLocaleDateString("en-GB") %>
+                                    </strong>
+                                </div>
+
+                                <div>
+                                    <span class="label">
+                                        Items
+                                    </span>
+
+                                    <strong>
+                                        <%= order.items.reduce((total, item) => {
+                                            return total + Number(item.quantity);
+                                        }, 0) %>
+                                    </strong>
+                                </div>
+
+                                <div>
+                                    <span class="label">
+                                        Total
+                                    </span>
+
+                                    <strong class="order-total">
+                                        BHD <%= Number(order.totalPrice || 0).toFixed(2) %>
+                                    </strong>
+                                </div>
+
+                            </div>
+
+                            <span class="status status-<%= order.status.toLowerCase() %>">
+                                <%= order.status %>
+                            </span>
+
+                        </div>
+
+                        <div class="order-products">
+
+                            <% order.items.forEach((item) => { %>
+
+                                <%
+                                    const product = item.product;
+
+                                    const variant =
+                                        product?.variants?.[item.variantIndex];
+
+                                    const image =
+                                        variant?.image || "";
+
+                                    const itemSubtotal =
+                                        Number(item.price) *
+                                        Number(item.quantity);
+                                %>
+
+                                <% if (product) { %>
+
+                                    <div class="order-product">
+
+                                        <div class="product-image">
+
+                                            <% if (image) { %>
+
+                                                <img
+                                                    src="/image/product/<%= image %>"
+                                                    alt="<%= product.name %>"
+                                                >
+
+                                            <% } else { %>
+
+                                                <div class="no-image">
+                                                    No image
+                                                </div>
+
+                                            <% } %>
+
+                                        </div>
+
+                                        <div class="product-details">
+
+                                            <p class="brand">
+                                                <%= product.brand || "Unknown" %>
+                                            </p>
+
+                                            <h2>
+                                                <a href="/details/<%= product._id %>">
+                                                    <%= product.name %>
+                                                </a>
+                                            </h2>
+
+                                            <% if (variant) { %>
+
+                                                <div class="variant-details">
+
+                                                    <% Object.entries(variant.attributes || {}).forEach(([key, value]) => { %>
+
+                                                        <span>
+                                                            <strong>
+                                                                <%= key %>:
+                                                            </strong>
+
+                                                            <%= value %>
+                                                        </span>
+
+                                                    <% }) %>
+
+                                                </div>
+
+                                            <% } %>
+
+                                            <p class="quantity">
+                                                Quantity:
+                                                <strong>
+                                                    <%= item.quantity %>
+                                                </strong>
+                                            </p>
+
+                                        </div>
+
+                                        <div class="product-price">
+
+                                            <p>
+                                                BHD <%= Number(item.price).toFixed(2) %>
+                                                each
+                                            </p>
+
+                                            <strong>
+                                                BHD <%= itemSubtotal.toFixed(2) %>
+                                            </strong>
+
+                                        </div>
+
+                                    </div>
+
+                                <% } %>
+
+                            <% }) %>
+
+                        </div>
+
+
+                    </article>
+
+                <% }) %>
+
+            </section>
+
+        <% } %>
+
+    </main>
+
+</body>
+
+</html>

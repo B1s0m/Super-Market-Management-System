@@ -60,7 +60,7 @@
             </section>
 
 
-            <section class="subcategory-section">
+            <section class="    -section">
 
 
 
@@ -155,7 +155,7 @@
 
 
                                         <% // some opeartion for take price and discount const
-                                            variantPrices=product.variants .map((variant)=> Number(variant.price))
+                                            variantPrices=product.variants.map((variant)=> Number(variant.price))
 
                                             // this like Math.min( variantPrices[0] ,variantPrices[1],..)
                                             const cheapestPrice = variantPrices.length > 0 ? Math.min(...variantPrices)
@@ -229,18 +229,9 @@
 
                         <div class="empty-products">
 
-                            <div class="empty-icon">
-                                📦
-                            </div>
-
                             <h3>
                                 No products found
                             </h3>
-
-                            <p>
-                                There are currently no products available
-                                in this category.
-                            </p>
 
                             <a href="/homepage">
                                 Return to Homepage

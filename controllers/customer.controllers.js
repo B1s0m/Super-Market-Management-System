@@ -4,6 +4,7 @@ const Product = require("../models/Product");
 const Category = require("../models/Category");
 const Subcategory = require("../models/Subcategory");
 const Cart = require("../models/Cart");
+const Order = require("../models/Order");
 
 
 
@@ -15,7 +16,7 @@ const Cart = require("../models/Cart");
 router.get('/homepage', async (req, res) => {
     const countCatgoty = await Category.find()
     // gt mean greate than      sort large → small
-    const offers = await Product.find({ discount: { $gt: 0 } }).sort({ discount: -1 }).limit(4)
+    const offers = await Product.find({ discount: { $gt: 0 } }).sort({ discount: -1 }).limit(8)
         .populate({
             path: "subcategory",
             populate: {
@@ -24,7 +25,7 @@ router.get('/homepage', async (req, res) => {
         });
     // console.log(offers);
     //   console.log("----------------------------featuredProducts---------------");
-    const featuredProducts = await Product.find().sort({ views: -1 }).limit(4)
+    const featuredProducts = await Product.find().sort({ views: -1 }).limit(8)
         .populate({
             path: "subcategory",
             populate: {
@@ -35,8 +36,7 @@ router.get('/homepage', async (req, res) => {
     // console.log(featuredProducts);
     console.log("----------------------------newArrivals---------------");
     const newArrivals = await Product.find()
-        .sort({ createdAt: -1 })
-        .limit(4)
+        .sort({ createdAt: -1 }).limit(8)
         .populate({
             path: "subcategory",
             populate: {
@@ -44,10 +44,8 @@ router.get('/homepage', async (req, res) => {
             }
         });
 
-    // console.log(newArrivals);  
-    //         }); 
+    
     res.render('customer/customerHome.ejs', { offers, newArrivals, featuredProducts, countCatgoty })
-    //  res.render("customer/prodectdetails.ejs")
 })
 
 
@@ -94,7 +92,7 @@ router.get("/categoryviews/:id", async (req, res) => {
             }
         });
 
-        console.log(products);
+        // console.log(products);
 
         const totalProducts = await Product.countDocuments({
             subcategory: {
@@ -319,5 +317,268 @@ router.get("/cart", async (req, res) => {
     }
 });
 
+
+
+
+router.post("/cart/update/:itemId", async (req, res) => {
+    try {
+        const userId = req.session.user._id;
+        const itemId = req.params.itemId;
+        const newQuantity = Number(req.body.quantity);
+     
+        if (!Number.isInteger(newQuantity) || newQuantity < 1) {
+            return res.status(400).send("Invalid quantity");
+        }
+
+        const cart = await Cart.findOne({ user: userId });
+
+        if (!cart) {
+            return res.status(404).send("Cart not found");
+        }
+
+        const item = cart.items.id(itemId);
+
+        if (!item) {
+            return res.status(404).send("Cart item not found");
+        }
+
+        const product = await Product.findById(item.product);
+
+        if (!product) {
+            return res.status(404).send("Product not found");
+        }
+
+        const variant = product.variants[item.variantIndex];
+
+        if (!variant) {
+            return res.status(404).send("Variant not found");
+        }
+
+        if (newQuantity > variant.quantity) {
+            return res.status(400).send(`Only ${variant.quantity} items available`);
+        }
+
+        // Update quantity
+        item.quantity = newQuantity;
+
+        // Update price in case it changed
+        item.priceAtAdd = variant.price;
+
+        // Recalculate cart total
+        cart.totalPrice = cart.items.reduce((total, cartItem) => {
+            return total + (cartItem.priceAtAdd * cartItem.quantity);
+        }, 0);
+
+        await cart.save();
+
+        res.redirect("/cart");
+
+    } catch (error) {
+        console.log("Error updating cart:", error);
+        res.status(500).send("Failed to update cart");
+    }
+});
+
+
+
+router.post("/cart/remove/:itemId", async (req, res) => {
+    try {
+        const userId = req.session.user._id;
+        const itemId = req.params.itemId;
+
+        const cart = await Cart.findOne({ user: userId });
+
+        if (!cart) {
+            return res.status(404).send("Cart not found");
+        }
+
+        // Find the item in the cart
+        const item = cart.items.id(itemId);
+
+        if (!item) {
+            return res.status(404).send("Cart item not found");
+        }
+
+        // Remove the item
+        item.deleteOne();
+
+        // Recalculate total price
+        cart.totalPrice = cart.items.reduce((total, cartItem) => {
+            return total + (cartItem.priceAtAdd * cartItem.quantity);
+        }, 0);
+
+        await cart.save();
+
+        res.redirect("/cart");
+
+    } catch (error) {
+        console.log("Error removing cart item:", error);
+        res.status(500).send("Failed to remove cart item");
+    }
+});
+
+
+
+router.post("/checkout", async (req, res) => {
+    try {
+
+        const userId = req.session.user._id;
+
+        // Find user's cart
+        const cart = await Cart.findOne({ user: userId });
+
+        if (!cart || cart.items.length === 0) {
+            return res.status(400).send("Your cart is empty.");
+        }
+
+        const orderItems = [];
+        let totalPrice = 0;
+
+        // Check stock first
+        for (const item of cart.items) {
+
+            const product = await Product.findById(item.product);
+
+            if (!product) {
+                return res.status(404).send("Product not found.");
+            }
+
+            const variant = product.variants[item.variantIndex];
+
+            if (!variant) {
+                return res.status(400).send("Product variant not found.");
+            }
+
+            if (variant.quantity < item.quantity) {
+                return res.status(400).send(
+                    `${product.name} has only ${variant.quantity} item(s) left in stock.`
+                );
+            }
+        }
+
+        // Everything is valid, create order
+        for (const item of cart.items) {
+
+            const product = await Product.findById(item.product);
+
+            const variant = product.variants[item.variantIndex];
+
+            // Reduce stock
+            variant.quantity -= item.quantity;
+
+            await product.save();
+
+            orderItems.push({
+                product: product._id,
+                variantIndex: item.variantIndex,
+                quantity: item.quantity,
+                price: item.priceAtAdd
+            });
+
+            totalPrice += item.priceAtAdd * item.quantity;
+        }
+
+        // Create order
+        const order = await Order.create({
+            user: userId,
+            items: orderItems,
+            totalPrice: totalPrice
+        });
+
+        // Delete cart
+        await Cart.deleteOne({ _id: cart._id });
+
+        res.redirect(`/orders/${order._id}`);
+
+    } catch (error) {
+
+        console.log("Checkout Error:", error);
+
+        res.status(500).send("Checkout failed.");
+    }
+});
+
+router.get("/orders", async (req, res) => {
+    try {
+        const userId = req.session.user?._id;
+
+        if (!userId) {
+            return res.redirect("/auth/sign-in");
+        }
+
+        const orders = await Order.find({
+            user: userId
+        })
+            .populate("items.product")
+            .sort({ createdAt: -1 });
+
+        res.render("customer/orders.ejs", {
+            orders
+        });
+
+    } catch (error) {
+        console.log("Error loading orders:", error);
+
+        return res
+            .status(500)
+            .send("Failed to load orders");
+    }
+});
+
+router.get("/offers", async (req, res) => {
+    try {
+
+        // const limit = 10;
+        // const page = Number(req.query.page) || 1;
+
+        // const skip = (page - 1) * limit;
+
+        const products = await Product.find({
+            discount: { $gt: 0 }
+        }).populate("subcategory")
+        .sort({ discount: -1 });
+             
+        res.render("customer/productsList.ejs", {
+            title: "Offers",
+            products
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.redirect("/");
+    }
+});
+router.get("/featured", async (req, res) => {
+    try {
+        const products = await Product.find().limit(20)
+            .populate("subcategory")
+            .sort({ views: -1 });
+
+        res.render("customer/productsList.ejs", {
+            title: "Featured Products",
+            products
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.redirect("/");
+    }
+});
+router.get("/new-arrivals", async (req, res) => {
+    try {
+        const products = await Product.find().limit(20)
+            .populate("subcategory")
+            .sort({ createdAt: -1 });
+
+        res.render("customer/productsList.ejs", {
+            title: "New Arrivals",
+            products
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.redirect("/");
+    }
+});
 
 module.exports = router;

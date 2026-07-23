@@ -24,9 +24,16 @@ const orderSchema = new mongoose.Schema({
       type: Number,
       required: true
     }
+   , variantIndex: {
+      type: Number,
+      required: true
+    },
   }
 ],
-
+ totalPrice: {
+  type: Number,
+  default: 0 ,
+ },
 delivery: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User"

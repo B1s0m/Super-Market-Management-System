@@ -278,6 +278,8 @@ input {
     border-radius: 9px;
     font-weight: bold;
     transition: 0.2s;
+    border: none;
+    cursor: pointer;
 }
 
 .checkout-button:hover {

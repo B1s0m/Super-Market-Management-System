@@ -61,13 +61,13 @@
                     Views: <%= product.views %>
                 </div>
 
-                <% const cheapestPrice=Math.min( ...product.variants.map( variant=> variant.price
-                    )
-                    );
+                <% const totalQuantity=product.variants.reduce((total, variant)=> {
+                    return total + Number(variant.quantity || 0);
+                    }, 0);
                     %>
 
-                    <div class="price">
-                        From <%= cheapestPrice.toFixed(2) %> BHD
+                    <div class="rating">
+                     Quantity:   <%= totalQuantity %>
                     </div>
 
 
@@ -135,25 +135,26 @@
                             ✖ Out of Stock
                             <% } %>
                 </p>
+                <% if (user){ %>
+                    <form action="/cart/add" method="POST">
 
-                <form action="/cart/add" method="POST">
+                        <input type="hidden" name="productId" value="<%= product._id %>">
 
-                    <input type="hidden" name="productId" value="<%= product._id %>">
+                        <input type="hidden" id="variantIndex" name="variantIndex" value="0">
 
-                    <input type="hidden" id="variantIndex" name="variantIndex" value="0">
+                        <label for="quantity">
+                            Quantity
+                        </label>
 
-                    <label for="quantity">
-                        Quantity
-                    </label>
+                        <input id="quantity" type="number" name="quantity" value="1" min="1"
+                            max="<%= product.variants[0].quantity %>" required>
 
-                    <input id="quantity" type="number" name="quantity" value="1" min="1"
-                        max="<%= product.variants[0].quantity %>" required>
+                        <button class="cart-btn" type="submit">
+                            🛒 Add To Cart
+                        </button>
 
-                    <button class="cart-btn" type="submit">
-                        🛒 Add To Cart
-                    </button>
-
-                </form>
+                    </form>
+                    <% } %>
 
 
             </div>
@@ -162,9 +163,9 @@
 
 
         <script>
-                 console.log(document.getElementById("variants").value);
+            console.log(document.getElementById("variants").value);
 
-            const variants = JSON.parse( document.getElementById("variants").value);
+            const variants = JSON.parse(document.getElementById("variants").value);
             console.log(variants)
             const selectVariantButtons = document.querySelectorAll(".variant-button");
             selectVariantButtons.forEach(button => {

@@ -19,264 +19,492 @@
     <%- include('../partials/customer/navbar') %>
 
         <main class="page-container">
-       
-        <section class="header">
 
-            <h1>
-                Welcome to BMJ SuperMarket
-            </h1>
-           
-            <p>
-                Everything you need in one place
-            </p>
+            <section class="header">
 
+                <h1>
+                    Welcome to BMJ SuperMarket
+                </h1>
 
-        </section>
+                <p>
+                    Everything you need in one place
+                </p>
 
 
+            </section>
 
 
 
 
-        <section class="section">
 
-            <div class="section-header">
+            <!-- this for  appers Categories -->
+            <section class="section">
 
-                <h2>Categories</h2>
-
-
-            </div>
-            <div class="categories">
-
-               
-                 
-
-            <% for (const one of countCatgoty) { %>
-
-                 
-
-                 <a href="/categoryviews/<%=one._id%>">    <div class="category">  <%= one.name %>   </div> </a>
-              
-                    
-                    
-                    
-                    <% } %>
-                    
+                <div class="section-header">
+                    <h2>Categories</h2>
                 </div>
 
-        </section>
+                <div class="categories">
 
-   
-        <section class="section">
+                    <% for (const one of countCatgoty) { %>
 
-            <div class="section-header">
+                        <a href="/categoryviews/<%=one._id%>">
+                            <div class="category">
+                                <%= one.name %>
+                            </div>
+                        </a>
+                        <% } %>
+                </div>
+            </section>
 
-                <h2>Offers</h2>
+
+            <section class="section">
+
+                <div class="section-header">
+
+                    <h2>Offers</h2>
 
                     <div class="section-actions">
 
-                    <button class="arrow">&#10094;</button>
+                        <button type="button" class="arrow offers-left">
+                            &#10094;
+                        </button>
 
-                    <button class="arrow">&#10095;</button>
+                        <button type="button" class="arrow offers-right">
+                            &#10095;
+                        </button>
 
-                    <a href="#">View All →</a>
+                        <a href="/offers">
+                            View All →
+                        </a>
 
-                </div>
-
-            </div>
-
-            <div class="products">
-
-                <div class="card">
-
-                    <img src="" alt="">
-
-                    <h3>iPhone 16</h3>
-
-                    <div class="stars">view: 132</div>
-
-                    <p class="price">999 BH</p>
-
-                    <button>Add to Cart</button>
-
-                </div>
-
-                <div class="card">
-
-                    <img src="" alt="">
-
-                    <h3>Milk</h3>
-
-                    <div class=" stars"> view: 59
                     </div>
 
-                    <p class="price">1.50 BH</p>
+                </div>
 
-                    <button>Add to Cart</button>
+                <div class="products-slider" id="offersSlider">
+
+                    <% offers.forEach((offer)=> { %>
+
+                        <% const variants=Array.isArray(offer.variants) ? offer.variants : []; const
+                            variantPrices=variants .map(variant=> Number(variant.price))
+                            .filter(price => Number.isFinite(price));
+
+                            const cheapestPrice =
+                            variantPrices.length > 0
+                            ? Math.min(...variantPrices)
+                            : 0;
+
+                            const discount =
+                            Number(offer.discount || 0);
+
+                            const finalPrice =
+                            cheapestPrice -
+                            (cheapestPrice * discount / 100);
+
+                            const hasStock =
+                            variants.some(variant =>
+                            Number(variant.quantity) > 0
+                            );
+                            %>
+
+                            <article class="product-card">
+
+                                <a href="/details/<%= offer._id %>" class="product-image-link">
+
+                                    <% if ( variants.length> 0 &&
+                                        variants[0].image
+                                        ) { %>
+
+                                        <img src="/image/product/<%= variants[0].image %>" alt="<%= offer.name %>"
+                                            class="product-image">
+
+                                        <% } else if (offer.image) { %>
+
+                                            <img src="/image/product/<%= offer.image %>" alt="<%= offer.name %>"
+                                                class="product-image">
+
+                                            <% } else { %>
+
+                                                <div class="no-image">
+                                                    No Image
+                                                </div>
+
+                                                <% } %>
+
+                                </a>
+
+                                <div class="product-content">
+
+                                    <p class="product-subcategory">
+                                        <%= offer.subcategory?.name || "Other" %>
+                                    </p>
+
+                                    <a href="/details/<%= offer._id %>" class="product-name">
+                                        <%= offer.name %>
+                                    </a>
+
+                                    <p class="product-brand">
+                                        Brand:
+                                        <span>
+                                            <%= offer.brand || "Unknown" %>
+                                        </span>
+                                    </p>
+
+                                    <div class="price-row">
+
+                                        <div>
+
+                                            <% if (discount> 0) { %>
+
+                                                <span class="old-price">
+                                                    <%= cheapestPrice.toFixed(2) %> BHD
+                                                </span>
+
+                                                <p class="product-price">
+                                                    <%= finalPrice.toFixed(2) %> BHD
+                                                </p>
+
+                                                <% } else { %>
+
+                                                    <p class="product-price">
+                                                        <%= cheapestPrice.toFixed(2) %> BHD
+                                                    </p>
+
+                                                    <% } %>
+
+                                        </div>
+
+                                        <% if (hasStock) { %>
+
+                                            <span class="stock available">
+                                                In Stock
+                                            </span>
+
+                                            <% } else { %>
+
+                                                <span class="stock unavailable">
+                                                    Out of Stock
+                                                </span>
+
+                                                <% } %>
+
+                                    </div>
+
+                                    <a href="/details/<%= offer._id %>" class="view-button">
+                                        View Product
+                                    </a>
+
+                                </div>
+
+                            </article>
+
+                            <% }) %>
 
                 </div>
 
-                <div class="card">
+            </section>
 
-                    <img src="" alt="">
 
-                    <h3>Nike Shoes</h3>
 
-                    <div class="stars"> view: 56</div>
 
-                    <p class="price">30 BH</p>
+            <section class="section">
 
-                    <button>Add to Cart</button>
+                <div class="section-header">
 
-                </div>
-
-                <div class="card">
-
-                    <img src="" alt="">
-
-                    <h3>Laptop</h3>
-
-                    <div class="stars">view: 52</div>
-
-                    <p class="price">450 BH</p>
-
-                    <button class="addcart" > Add to Cart</button>
-
-                </div>
-
-            </div>
-
-        </section>
-        <section class="section">
-
-            <div class="section-header">
-
-                <h2>Featured Products</h2>
+                    <h2>Featured Products</h2>
 
                     <div class="section-actions">
 
-                    <button class="arrow">&#10094;</button>
+                        <button type="button" class="arrow featured-left">
+                            &#10094;
+                        </button>
 
-                    <button class="arrow">&#10095;</button>
+                        <button type="button" class="arrow featured-right">
+                            &#10095;
+                        </button>
 
-                    <a href="#">View All →</a>
+                        <a href="/featured">
+                            View All →
+                        </a>
 
-                </div>
-
-            </div>
-
-            <div class="products">
-
-                <div class="card">
-
-                    <img src="" alt="">
-
-                    <h3>iPhone 16</h3>
-
-                    <div class="stars">view: 132</div>
-
-                    <p class="price">999 BH</p>
-
-                    <button>Add to Cart</button>
-
-                </div>
-
-                <div class="card">
-
-                    <img src="" alt="">
-
-                    <h3>Milk</h3>
-
-                    <div class=" stars"> view: 59
                     </div>
 
-                    <p class="price">1.50 BH</p>
+                </div>
 
-                    <button>Add to Cart</button>
+                <div class="products-slider" id="featuredSlider">
+
+                    <% featuredProducts.forEach((offer)=> { %>
+
+                        <% const variants=Array.isArray(offer.variants) ? offer.variants : []; const
+                            variantPrices=variants .map(variant=> Number(variant.price))
+                            .filter(price => Number.isFinite(price));
+
+                            const cheapestPrice =
+                            variantPrices.length > 0
+                            ? Math.min(...variantPrices)
+                            : 0;
+
+                            const discount =
+                            Number(offer.discount || 0);
+
+                            const finalPrice =
+                            cheapestPrice -
+                            (cheapestPrice * discount / 100);
+
+                            const hasStock =
+                            variants.some(variant =>
+                            Number(variant.quantity) > 0
+                            );
+                            %>
+
+                            <article class="product-card">
+
+                                <a href="/details/<%= offer._id %>" class="product-image-link">
+
+                                    <% if ( variants.length> 0 &&
+                                        variants[0].image
+                                        ) { %>
+
+                                        <img src="/image/product/<%= variants[0].image %>" alt="<%= offer.name %>"
+                                            class="product-image">
+
+                                        <% } else if (offer.image) { %>
+
+                                            <img src="/image/product/<%= offer.image %>" alt="<%= offer.name %>"
+                                                class="product-image">
+
+                                            <% } else { %>
+
+                                                <div class="no-image">
+                                                    No Image
+                                                </div>
+
+                                                <% } %>
+
+                                </a>
+
+                                <div class="product-content">
+
+                                    <p class="product-subcategory">
+                                        <%= offer.subcategory?.name || "Other" %>
+                                    </p>
+
+                                    <a href="/details/<%= offer._id %>" class="product-name">
+                                        <%= offer.name %>
+                                    </a>
+
+                                    <p class="product-brand">
+                                        Brand:
+                                        <span>
+                                            <%= offer.brand || "Unknown" %>
+                                        </span>
+                                    </p>
+
+                                    <div class="price-row">
+
+                                        <div>
+
+                                            <% if (discount> 0) { %>
+
+                                                <span class="old-price">
+                                                    <%= cheapestPrice.toFixed(2) %> BHD
+                                                </span>
+
+                                                <p class="product-price">
+                                                    <%= finalPrice.toFixed(2) %> BHD
+                                                </p>
+
+                                                <% } else { %>
+
+                                                    <p class="product-price">
+                                                        <%= cheapestPrice.toFixed(2) %> BHD
+                                                    </p>
+
+                                                    <% } %>
+
+                                        </div>
+
+                                        <% if (hasStock) { %>
+
+                                            <span class="stock available">
+                                                In Stock
+                                            </span>
+
+                                            <% } else { %>
+
+                                                <span class="stock unavailable">
+                                                    Out of Stock
+                                                </span>
+
+                                                <% } %>
+
+                                    </div>
+
+                                    <a href="/details/<%= offer._id %>" class="view-button">
+                                        View Product
+                                    </a>
+
+                                </div>
+
+                            </article>
+
+                            <% }) %>
 
                 </div>
 
-                <div class="card">
 
-                    <img src="" alt="">
+            </section>
 
-                    <h3>Nike Shoes</h3>
+            <section class="section">
 
-                    <div class="stars"> view: 56</div>
+                <div class="section-header">
 
-                    <p class="price">30 BH</p>
-
-                    <button>Add to Cart</button>
-
-                </div>
-
-                <div class="card">
-
-                    <img src="" alt="">
-
-                    <h3>Laptop</h3>
-
-                    <div class="stars">view: 52</div>
-
-                    <p class="price">450 BH</p>
-
-                    <button>Add to Cart</button>
-
-                </div>
-
-            </div>
-
-        </section>
-
-        <!------------------------------------- -->
-        <section class="section">
-
-            <div class="section-header">
-
-                <h2>New Arrivals</h2>
-
-                <a href="#">View All →</a>
-
-            </div>
-
-            <div class="products">
-                <% for (const offer of offers) { %>
+                    <h2>New Arrivals</h2>
                     
-                <div class="card">
-                    
-                    <img src="" alt="">
-                    <h3><%=offer.name%></h3>
-                    <p class="price">XXXXX BH</p>
-                    <button>Add to Cart</button>
+                     <div class="section-actions">
+
+                        <button type="button" class="arrow new-arrivals-left">
+                            &#10094;
+                        </button>
+
+                        <button type="button" class="arrow new-arrivals-right">
+                            &#10095;
+                        </button>
+
+                        <a href="/new-arrivals">
+                            View All →
+                        </a>
+
+                    </div>
+
                 </div>
-                             <%  } %>
 
-                <!-- <div class="card">
-                    <img src="" alt="">
-                    <h3>Orange Juice</h3>
-                    <p class="price">1.80 BH</p>
-                    <button>Add to Cart</button>
-                </div> -->
+                <div class="products-slider" id="newarrivalsSlider">
 
-                <!-- <div class="card">
-                    <img src="" alt="">
-                    <h3>Headphones</h3>
-                    <p class="price">35 BH</p>
-                    <button>Add to Cart</button>
-                </div> -->
+                    <% newArrivals.forEach((offer)=> { %>
 
-                <!-- <div class="card">
-                    <img src="" alt="">
-                    <h3>Cheese</h3>
-                    <p class="price">4 BH</p>
-                    <button>Add to Cart</button>
-                </div> -->
+                        <% const variants=Array.isArray(offer.variants) ? offer.variants : []; const
+                            variantPrices=variants .map(variant=> Number(variant.price))
+                            .filter(price => Number.isFinite(price));
 
-            </div>
+                            const cheapestPrice =
+                            variantPrices.length > 0
+                            ? Math.min(...variantPrices)
+                            : 0;
 
-        </section>
-        
-         </main>
+                            const discount =
+                            Number(offer.discount || 0);
+
+                            const finalPrice =
+                            cheapestPrice -
+                            (cheapestPrice * discount / 100);
+
+                            const hasStock =
+                            variants.some(variant =>
+                            Number(variant.quantity) > 0
+                            );
+                            %>
+
+                            <article class="product-card">
+
+                                <a href="/details/<%= offer._id %>" class="product-image-link">
+
+                                    <% if ( variants.length> 0 &&
+                                        variants[0].image
+                                        ) { %>
+
+                                        <img src="/image/product/<%= variants[0].image %>" alt="<%= offer.name %>"
+                                            class="product-image">
+
+                                        <% } else if (offer.image) { %>
+
+                                            <img src="/image/product/<%= offer.image %>" alt="<%= offer.name %>"
+                                                class="product-image">
+
+                                            <% } else { %>
+
+                                                <div class="no-image">
+                                                    No Image
+                                                </div>
+
+                                                <% } %>
+
+                                </a>
+
+                                <div class="product-content">
+
+                                    <p class="product-subcategory">
+                                        <%= offer.subcategory?.name || "Other" %>
+                                    </p>
+
+                                    <a href="/details/<%= offer._id %>" class="product-name">
+                                        <%= offer.name %>
+                                    </a>
+
+                                    <p class="product-brand">
+                                        Brand:
+                                        <span>
+                                            <%= offer.brand || "Unknown" %>
+                                        </span>
+                                    </p>
+
+                                    <div class="price-row">
+
+                                        <div>
+
+                                            <% if (discount> 0) { %>
+
+                                                <span class="old-price">
+                                                    <%= cheapestPrice.toFixed(2) %> BHD
+                                                </span>
+
+                                                <p class="product-price">
+                                                    <%= finalPrice.toFixed(2) %> BHD
+                                                </p>
+
+                                                <% } else { %>
+
+                                                    <p class="product-price">
+                                                        <%= cheapestPrice.toFixed(2) %> BHD
+                                                    </p>
+
+                                                    <% } %>
+
+                                        </div>
+
+                                        <% if (hasStock) { %>
+
+                                            <span class="stock available">
+                                                In Stock
+                                            </span>
+
+                                            <% } else { %>
+
+                                                <span class="stock unavailable">
+                                                    Out of Stock
+                                                </span>
+
+                                                <% } %>
+
+                                    </div>
+
+                                    <a href="/details/<%= offer._id %>" class="view-button">
+                                        View Product
+                                    </a>
+
+                                </div>
+
+                            </article>
+
+                            <% }) %>
+
+                </div>
+
+
+            </section>
+
+        </main>
 
 
         <footer>
@@ -286,6 +514,91 @@
             </p>
 
         </footer>
+
+        <script>
+            const offersSlider =document.getElementById("offersSlider");
+
+            const offersleft =document.querySelector(".offers-left");
+
+            const offersright =document.querySelector(".offers-right");
+           
+            const featuredSlider =document.getElementById("featuredSlider");
+
+            const featuredleft =document.querySelector(".featured-left");
+
+            const featuredright =document.querySelector(".featured-right");
+           
+            const newarrivalsSlider =document.getElementById("newarrivalsSlider");
+
+            const newarrivalsleft =document.querySelector(".new-arrivals-left");
+
+            const newarrivalsright =document.querySelector(".new-arrivals-right");
+
+
+
+       function leftButton(Slider)  {
+                Slider.scrollBy({
+                    left: -300,
+                    behavior: "smooth"
+                });
+            }
+     
+       function rightButton(Slider)  {
+                Slider.scrollBy({
+                    left: 300,
+                    behavior: "smooth"
+                });
+            }
+
+
+
+
+
+            offersleft.addEventListener("click",function () {
+        leftButton(offersSlider)
+        } );
+
+            offersright.addEventListener("click", function () {
+        rightButton(offersSlider)
+        } );
+
+
+
+            featuredleft.addEventListener("click",function () {
+        leftButton(featuredSlider)
+        } );
+
+            featuredright.addEventListener("click", function () {
+        rightButton(featuredSlider)
+        } );
+
+
+
+            newarrivalsleft.addEventListener("click",function () {
+          leftButton(newarrivalsSlider)
+        } );
+
+            newarrivalsright.addEventListener("click", function () {
+             rightButton(newarrivalsSlider)
+        } );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        </script>
 
 
 

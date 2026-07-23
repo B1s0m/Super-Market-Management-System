@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+
+    <link rel="stylesheet" href="/css/customer/productsList.css">
+        <link rel="stylesheet" href="/css/customer/navbar.css">
+
+</head>
+
+<body>
+
+    <%- include('../partials/customer/navbar') %>
+   
+        <main class="page-container">  
+    <section class="page-header">
+                <div>
+                    <h1>
+                        <%= title %>
+                    </h1>
+
+                    <p class="product-count">
+                        <%= products.length %>
+                           products available
+                    </p>
+                </div>
+
+            </section>
+
+    <section class="products-grid">
+
+        <% products.forEach(product => { %>
+
+        <%
+            const variants = Array.isArray(product.variants)
+                ? product.variants
+                : [];
+
+            const prices = variants
+                .map(v => Number(v.price))
+                .filter(Number.isFinite);
+
+            const cheapestPrice =
+                prices.length ? Math.min(...prices) : 0;
+
+            const discount = Number(product.discount || 0);
+
+            const finalPrice =
+                cheapestPrice -
+                (cheapestPrice * discount / 100);
+
+            const hasStock =
+                variants.some(v => Number(v.quantity) > 0);
+        %>
+
+       <article class="product-card">
+
+    <a
+        href="/details/<%= product._id %>"
+        class="product-image-link"
+    >
+
+        <% if (variants.length && variants[0].image) { %>
+
+            <img
+                src="/image/product/<%= variants[0].image %>"
+                alt="<%= product.name %>"
+                class="product-image"
+            >
+
+        <% } else if (product.image) { %>
+
+            <img
+                src="/image/product/<%= product.image %>"
+                alt="<%= product.name %>"
+                class="product-image"
+            >
+
+        <% } else { %>
+
+            <div class="no-image">
+                No Image
+            </div>
+
+        <% } %>
+
+    </a>
+
+    <div class="product-content">
+
+        <p class="product-subcategory">
+            <%= product.subcategory?.name || "Other" %>
+        </p>
+
+        <a
+            href="/details/<%= product._id %>"
+            class="product-name"
+        >
+            <%= product.name %>
+        </a>
+
+        <p class="product-brand">
+            Brand:
+            <span>
+                <%= product.brand || "Unknown" %>
+            </span>
+        </p>
+
+        <div class="price-row">
+
+            <div>
+
+                <% if (discount > 0) { %>
+
+                    <span class="old-price">
+                        <%= cheapestPrice.toFixed(2) %> BHD
+                    </span>
+
+                    <p class="product-price">
+                        <%= finalPrice.toFixed(2) %> BHD
+                    </p>
+
+                <% } else { %>
+
+                    <p class="product-price">
+                        <%= cheapestPrice.toFixed(2) %> BHD
+                    </p>
+
+                <% } %>
+
+            </div>
+
+            <% if (hasStock) { %>
+
+                <span class="stock available">
+                    In Stock
+                </span>
+
+            <% } else { %>
+
+                <span class="stock unavailable">
+                    Out of Stock
+                </span>
+
+            <% } %>
+
+        </div>
+
+        <a
+            class="view-button"
+            href="/details/<%= product._id %>"
+        >
+            View Product
+        </a>
+
+    </div>
+
+</article>
+
+        <% }) %>
+
+    </section>
+       </main>
+</body>
+
+</html>
