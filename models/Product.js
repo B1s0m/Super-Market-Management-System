@@ -97,7 +97,7 @@ module.exports = Product;
 
 //  variants: [
 //     {
-//       attributes:{
+//        attributes:{
 //         color:"Black",
 //         size:"42"
 //       },

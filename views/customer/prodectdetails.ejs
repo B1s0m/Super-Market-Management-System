@@ -57,17 +57,15 @@
                     Brand: <%= product.brand %>
                 </p>
 
-                <div class="rating">
+                <div class="ratin">
                     Views: <%= product.views %>
                 </div>
+                <br>
 
-                <% const totalQuantity=product.variants.reduce((total, variant)=> {
-                    return total + Number(variant.quantity || 0);
-                    }, 0);
-                    %>
+                <% const firstOneQuantity=product.variants[0].quantity %>
 
-                    <div class="rating">
-                     Quantity:   <%= totalQuantity %>
+                    <div id="variantquantity">
+                        Quantity: <%= firstOneQuantity %>
                     </div>
 
 
@@ -81,10 +79,11 @@
 
                                 <% Object.entries(variant.attributes || {}).forEach(([key, value])=> { %>
 
-                                    <span>
-                                        <%= key %>: <%= value %>
-                                    </span>
-
+                             
+                                        <%= key.toUpperCase() %> : <%= value %>
+                                
+                                    <br>
+                                                 
                                     <% }) %>
 
                             </button>
@@ -109,7 +108,7 @@
 
                                     <p>
                                         <strong>
-                                            <%= key %>:
+                                            <%= key.toUpperCase() %>:
                                         </strong>
                                         <%= value %>
                                     </p>
@@ -124,9 +123,33 @@
 
             <div class="buy-box">
 
-                <h2 id="variantPrice">
-                    <%= product.variants[0].price.toFixed(2) %> BHD
+                  <%
+                      const oldPrice= product.variants[0]
+                        const finalPrice =
+                    Number(product.variants[0].price) *
+                    (1 - Number(product.discount) / 100);
+
+                  
+                  %>
+
+                
+                    <% if (product.discount> 0) { %>
+
+               <h4 id="oldvariantPrice"    class="old-price" >
+                    <%= oldPrice.price.toFixed(2) %> BHD
+                </h4>
+                 <h2 id="variantPrice"        class="product-price">
+                    <%= finalPrice.toFixed(2) %> BHD
                 </h2>
+
+                     <% } else { %>
+
+                      <h2 id="variantPrice"    class="product-price">
+                    <%= finalPrice.price.toFixed(2) %> BHD
+                </h2>
+
+
+                   <% } %>
 
                 <p class="stock" id="stockStatus">
                     <% if (product.variants[0].quantity> 0) { %>
@@ -158,16 +181,18 @@
 
 
             </div>
-            <input type="hidden" id="variants" value='<%- JSON.stringify(product.variants) %>''>
+            <input type="hidden" id="variants" value='<%- JSON.stringify(product) %>''>
         </div>
 
 
         <script>
-            console.log(document.getElementById("variants").value);
 
-            const variants = JSON.parse(document.getElementById("variants").value);
+            const product = JSON.parse(document.getElementById("variants").value);
+            const variants=product.variants
             console.log(variants)
             const selectVariantButtons = document.querySelectorAll(".variant-button");
+
+
             selectVariantButtons.forEach(button => {
 
                 button.addEventListener("click", (event) => {
@@ -180,7 +205,9 @@
 
             });
 
-
+         if (selectVariantButtons.length > 0) {
+                            selectVariant(0);
+                        }
 
 
 
@@ -199,8 +226,21 @@
                 document.querySelector("#variantIndex").value =
                     index;
 
-                document.querySelector("#variantPrice").textContent =
-                    Number(selectedVariant.price).toFixed(2) + " BHD";
+                const finalPrice =
+                    Number(selectedVariant.price) *
+                    (1 - Number(product.discount) / 100);
+                
+                    const oldPrice =
+                    Number(selectedVariant.price) ;
+
+                document.querySelector("#variantPrice").textContent = finalPrice.toFixed(2) + " BHD";
+                document.querySelector("#oldvariantPrice").textContent = oldPrice.toFixed(2) + " BHD";
+
+                document.querySelector("#variantquantity").textContent =
+                    `Quantity:  ${Number(selectedVariant.quantity)} `
+                
+
+
 
                 const stockStatus =
                     document.querySelector("#stockStatus");
@@ -236,15 +276,12 @@
 
                 }
 
-                document
-                    .querySelectorAll(".variant-button")
-                    .forEach(button => {
+                document .querySelectorAll(".variant-button").forEach(button => {
                         button.classList.remove("selected");
                     });
 
-                document
-                    .querySelectorAll(".variant-button")[index]
-                    .classList.add("selected");
+                document.querySelectorAll(".variant-button")[index]
+                      .classList.add("selected");
 
             }
 

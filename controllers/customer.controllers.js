@@ -60,7 +60,7 @@ router.get("/categoryviews/:id", async (req, res) => {
         const foundCategory = await Category.findById(categoryId);
 
         if (!foundCategory) {
-            return res.status(404).send("Category not found");
+            return res.send("Category not found");
         }
         //   Get all subcategories
         const subcategories = await Subcategory.find({
@@ -112,7 +112,7 @@ router.get("/categoryviews/:id", async (req, res) => {
     } catch (error) {
         console.log("Error loading category:", error);
 
-        res.status(500).send("Failed to load category page");
+        res.send("Failed to load category page");
     }
 });
 
@@ -121,6 +121,16 @@ router.get("/details/:id", async (req, res) => {
     try {
 
         const productId = req.params.id;
+                     
+        const updateview=await Product.findByIdAndUpdate(
+            productId,
+            {
+                $inc: { views: 1 }
+            },
+            {
+                new: true
+            }
+        )
 
         const product = await Product.findById(productId)
             .populate({
@@ -133,7 +143,7 @@ router.get("/details/:id", async (req, res) => {
       
 
         if (!product) {
-            return res.status(404).send("Product not found");
+            return res.send("Product not found");
         }
 
         res.render("customer/prodectdetails.ejs", {
@@ -143,7 +153,7 @@ router.get("/details/:id", async (req, res) => {
     } catch (error) {
         console.log("Error loading product:", error);
 
-        res.status(500).send("Failed to load product page");
+        res.send("Failed to load product page");
     }
 });
 
@@ -165,7 +175,7 @@ router.post("/cart/add", async (req, res) => {
             !Number.isInteger(quantity) ||
             quantity < 1
         ) {
-            return res.status(400).send("Invalid cart information");
+            return res.send("Invalid cart information");
         }
 
         const product = await Product.findById(productId);
@@ -180,7 +190,7 @@ router.post("/cart/add", async (req, res) => {
 
        
         if (quantity > variantStock) {
-            return res.status(400).send("Not enough stock");
+            return res.send("Not enough stock");
         }
 
         let cart = await Cart.findOne({
@@ -207,7 +217,7 @@ router.post("/cart/add", async (req, res) => {
                 Number(existingItem.quantity) + quantity;
 
             if (newQuantity > variantStock) {
-                return res.status(400).send(
+                return res.send(
                     `Only ${variantStock} items are available`
                 );
             }
@@ -273,7 +283,6 @@ router.post("/cart/add", async (req, res) => {
         console.log("Error adding product to cart:", error);
 
         return res
-            .status(500)
             .send("Failed to add product to cart");
     }
 });
@@ -299,7 +308,7 @@ router.get("/cart", async (req, res) => {
     } catch (error) {
         console.log("Error loading cart:", error);
 
-        res.status(500).send("Failed to load cart");
+        res.send("Failed to load cart");
     }
 });
 
@@ -313,35 +322,35 @@ router.post("/cart/update/:itemId", async (req, res) => {
         const newQuantity = Number(req.body.quantity);
      
         if (!Number.isInteger(newQuantity) || newQuantity < 1) {
-            return res.status(400).send("Invalid quantity");
+            return res.send("Invalid quantity");
         }
 
         const cart = await Cart.findOne({ user: userId });
 
         if (!cart) {
-            return res.status(404).send("Cart not found");
+            return res.send("Cart not found");
         }
 
         const item = cart.items.id(itemId);
 
         if (!item) {
-            return res.status(404).send("Cart item not found");
+            return res.send("Cart item not found");
         }
 
         const product = await Product.findById(item.product);
 
         if (!product) {
-            return res.status(404).send("Product not found");
+            return res.send("Product not found");
         }
 
         const variant = product.variants[item.variantIndex];
 
         if (!variant) {
-            return res.status(404).send("Variant not found");
+            return res.send("Variant not found");
         }
 
         if (newQuantity > variant.quantity) {
-            return res.status(400).send(`Only ${variant.quantity} items available`);
+            return res.send(`Only ${variant.quantity} items available`);
         }
 
         // Update quantity
@@ -361,7 +370,7 @@ router.post("/cart/update/:itemId", async (req, res) => {
 
     } catch (error) {
         console.log("Error updating cart:", error);
-        res.status(500).send("Failed to update cart");
+        res.send("Failed to update cart");
     }
 });
 
@@ -375,13 +384,13 @@ router.post("/cart/remove/:itemId", async (req, res) => {
         const cart = await Cart.findOne({ user: userId });
 
         if (!cart) {
-            return res.status(404).send("Cart not found");
+            return res.send("Cart not found");
         }
 
         const item = cart.items.id(itemId);
 
         if (!item) {
-            return res.status(404).send("Cart item not found");
+            return res.send("Cart item not found");
         }
 
         item.deleteOne();
@@ -396,7 +405,7 @@ router.post("/cart/remove/:itemId", async (req, res) => {
 
     } catch (error) {
         console.log("Error removing cart item:", error);
-        res.status(500).send("Failed to remove cart item");
+        res.send("Failed to remove cart item");
     }
 });
 
@@ -410,7 +419,7 @@ router.post("/checkout", async (req, res) => {
         const cart = await Cart.findOne({ user: userId });
 
         if (!cart || cart.items.length === 0) {
-            return res.status(400).send("Your cart is empty.");
+            return res.send("Your cart is empty.");
         }
 
         const orderItems = [];
@@ -421,17 +430,17 @@ router.post("/checkout", async (req, res) => {
             const product = await Product.findById(item.product);
 
             if (!product) {
-                return res.status(404).send("Product not found.");
+                return res.send("Product not found.");
             }
 
             const variant = product.variants[item.variantIndex];
 
             if (!variant) {
-                return res.status(400).send("Product variant not found.");
+                return res.send("Product variant not found.");
             }
 
             if (variant.quantity < item.quantity) {
-                return res.status(400).send(
+                return res.send(
                     `${product.name} has only ${variant.quantity} item(s) left in stock.`
                 );
             }
@@ -471,7 +480,7 @@ router.post("/checkout", async (req, res) => {
 
         console.log("Checkout Error:", error);
 
-        res.status(500).send("Checkout failed.");
+        res.send("Checkout failed.");
     }
 });
 
@@ -496,9 +505,7 @@ router.get("/orders", async (req, res) => {
     } catch (error) {
         console.log("Error loading orders:", error);
 
-        return res
-            .status(500)
-            .send("Failed to load orders");
+        return res.send("Failed to load orders");
     }
 });
 

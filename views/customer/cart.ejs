@@ -58,7 +58,11 @@
                                 <% const product=item.product; const variant=product && product.variants &&
                                     product.variants[item.variantIndex]; const price=Number(item.priceAtAdd ||
                                     variant?.price || 0); const quantity=Number(item.quantity || 1); const
-                                    subtotal=price * quantity; const image=variant?.image || "" ; %>
+                                    subtotal=price * quantity; const image=variant?.image || "" ;
+                                      
+                                     
+                                    
+                                    %>
 
                                     <% if (product && variant) { %>
 
