@@ -15,7 +15,7 @@
 
     <%- include('../partials/customer/navbar') %>
    
-        <main class="page-container">  
+  <main class="page-container">  
     <section class="page-header">
                 <div>
                     <h1>
@@ -23,12 +23,20 @@
                     </h1>
 
                     <p class="product-count">
-                        <%= products.length %>
+                        <%= totalProducts %>
                            products available
                     </p>
                 </div>
 
             </section>
+
+
+
+
+
+         
+
+
 
     <section class="products-grid">
 
@@ -163,6 +171,28 @@
         <% }) %>
 
     </section>
+           
+            <div class="pagination">
+                 
+                <% if(page> 1){ %>
+                    <a href="?page=<%= page-1 %>">Previous</a>
+                    <% } %>
+                                      
+                        <%                                    
+                         for(let i=1; i <=totalPages; i++){ %>
+
+                            <a href="?page=<%= i %>" class="<%= page === i ? 'active' : '' %>">
+                                <%= i %>
+                            </a>
+
+                            <% } %>
+
+                                <% if(page < totalPages){ %>
+                                    <a href="?page=<%= page+1 %>">Next</a>
+                                    <% } %>
+
+            </div>
+
        </main>
 </body>
 

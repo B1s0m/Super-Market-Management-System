@@ -195,3 +195,33 @@ body {
 a {
     text-decoration: none;
 }
+
+.pagination{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:10px;
+    margin-top:30px;
+    
+            
+} 
+
+.pagination a{
+    text-decoration:none;
+    padding:10px 15px;
+    border-radius:8px;
+    background:#fff;
+    color:#333;
+    border:1px solid #ddd;
+}
+
+.pagination a:hover{
+    background:#3498db;
+    color:white;
+}
+
+.pagination .active{
+    background:#3498db;
+    color:white;
+}
+

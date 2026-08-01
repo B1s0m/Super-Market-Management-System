@@ -1,4 +1,4 @@
-const router = require("express").Router()
+const router = require("express").Router();
 
 const Product = require("../models/Product");
 const Category = require("../models/Category");
@@ -6,53 +6,52 @@ const Subcategory = require("../models/Subcategory");
 const Cart = require("../models/Cart");
 const Order = require("../models/Order");
 
-
-
-
-
-
-
-
-router.get('/homepage', async (req, res) => {
-    const countCatgoty = await Category.find()
+router.get("/homepage", async (req, res) => {
+    const countCatgoty = await Category.find();
     // gt mean greate than      sort large → small
-    const offers = await Product.find({ discount: { $gt: 0 } }).sort({ discount: -1 }).limit(8)
+    const offers = await Product.find({ discount: { $gt: 0 } })
+        .sort({ discount: -1 })
+        .limit(8)
         .populate({
             path: "subcategory",
             populate: {
-                path: "category"
-            }
+                path: "category",
+            },
         });
     // console.log(offers);
     //   console.log("----------------------------featuredProducts---------------");
-    const featuredProducts = await Product.find().sort({ views: -1 }).limit(8)
+    const featuredProducts = await Product.find()
+        .sort({ views: -1 })
+        .limit(8)
         .populate({
             path: "subcategory",
             populate: {
-                path: "category"
-            }
+                path: "category",
+            },
         });
 
     // console.log(featuredProducts);
     console.log("----------------------------newArrivals---------------");
     const newArrivals = await Product.find()
-        .sort({ createdAt: -1 }).limit(8)
+        .sort({ createdAt: -1 })
+        .limit(8)
         .populate({
             path: "subcategory",
             populate: {
-                path: "category"
-            }
+                path: "category",
+            },
         });
 
-    
-    res.render('customer/customerHome.ejs', { offers, newArrivals, featuredProducts, countCatgoty })
-})
-
-
+    res.render("customer/customerHome.ejs", {
+        offers,
+        newArrivals,
+        featuredProducts,
+        countCatgoty,
+    });
+});
 
 router.get("/categoryviews/:id", async (req, res) => {
     try {
-
         const categoryId = req.params.id;
 
         console.log(categoryId);
@@ -64,40 +63,37 @@ router.get("/categoryviews/:id", async (req, res) => {
         }
         //   Get all subcategories
         const subcategories = await Subcategory.find({
-            category: categoryId
+            category: categoryId,
         });
         // this  get only id
-        const subcategoryIds = subcategories.map(
-            subcategory => subcategory._id
-        );
+        const subcategoryIds = subcategories.map((subcategory) => subcategory._id);
 
         const limit = 10;
         const page = Number(req.query.page) || 1;
 
         const skip = (page - 1) * limit;
 
-
-
-
-
-        //  Get all Products has same id 
+        //  Get all Products has same id
         const products = await Product.find({
             subcategory: {
-                $in: subcategoryIds
-            }
-        }).skip(skip).limit(limit).populate({
-            path: "subcategory",
-            populate: {
-                path: "category"
-            }
-        });
+                $in: subcategoryIds,
+            },
+        })
+            .skip(skip)
+            .limit(limit)
+            .populate({
+                path: "subcategory",
+                populate: {
+                    path: "category",
+                },
+            });
 
         // console.log(products);
 
         const totalProducts = await Product.countDocuments({
             subcategory: {
-                $in: subcategoryIds
-            }
+                $in: subcategoryIds,
+            },
         });
         const totalPages = Math.ceil(totalProducts / limit);
 
@@ -106,9 +102,9 @@ router.get("/categoryviews/:id", async (req, res) => {
             subcategories,
             products,
             totalPages,
-            page, totalProducts
+            page,
+            totalProducts,
         });
-
     } catch (error) {
         console.log("Error loading category:", error);
 
@@ -116,47 +112,40 @@ router.get("/categoryviews/:id", async (req, res) => {
     }
 });
 
-
 router.get("/details/:id", async (req, res) => {
     try {
-
         const productId = req.params.id;
-                     
-        const updateview=await Product.findByIdAndUpdate(
+
+        const updateview = await Product.findByIdAndUpdate(
             productId,
             {
-                $inc: { views: 1 }
+                $inc: { views: 1 },
             },
             {
-                new: true
-            }
-        )
+                new: true,
+            },
+        );
 
-        const product = await Product.findById(productId)
-            .populate({
-                path: "subcategory",
-                populate: {
-                    path: "category"
-                }
-            });
-
-      
+        const product = await Product.findById(productId).populate({
+            path: "subcategory",
+            populate: {
+                path: "category",
+            },
+        });
 
         if (!product) {
             return res.send("Product not found");
         }
 
         res.render("customer/prodectdetails.ejs", {
-            product 
+            product,
         });
-
     } catch (error) {
         console.log("Error loading product:", error);
 
         res.send("Failed to load product page");
     }
 });
-
 
 router.post("/cart/add", async (req, res) => {
     try {
@@ -166,46 +155,37 @@ router.post("/cart/add", async (req, res) => {
 
         const userId = req.session.user?._id;
 
-       
-
-        if (
-            !productId ||
-            !Number.isInteger(variantIndex) ||
-            variantIndex < 0 ||
-            !Number.isInteger(quantity) ||
-            quantity < 1
-        ) {
+        if (!productId || !Number.isInteger(variantIndex) || variantIndex < 0 || !Number.isInteger(quantity) || quantity < 1) {
             return res.send("Invalid cart information");
         }
 
         const product = await Product.findById(productId);
 
-        
         const selectedVariant = product.variants[variantIndex];
 
-        
-
         const variantStock = Number(selectedVariant.quantity);
-        const variantPrice = Number(selectedVariant.price);
 
-       
+
+
+        const variantPrice = Number(product.variants.price) * (1 - Number(product.discount || 0) / 100);
+
         if (quantity > variantStock) {
             return res.send("Not enough stock");
         }
 
         let cart = await Cart.findOne({
-            user: userId
+            user: userId,
         });
 
         if (!cart) {
             cart = new Cart({
                 user: userId,
                 items: [],
-                totalPrice: 0
+                totalPrice: 0,
             });
         }
 
-        const existingItem = cart.items.find(item => {
+        const existingItem = cart.items.find((item) => {
             return (
                 item.product.toString() === productId &&
                 Number(item.variantIndex) === variantIndex
@@ -213,13 +193,10 @@ router.post("/cart/add", async (req, res) => {
         });
 
         if (existingItem) {
-            const newQuantity =
-                Number(existingItem.quantity) + quantity;
+            const newQuantity = Number(existingItem.quantity) + quantity;
 
             if (newQuantity > variantStock) {
-                return res.send(
-                    `Only ${variantStock} items are available`
-                );
+                return res.send(`Only ${variantStock} items are available`);
             }
 
             existingItem.quantity = newQuantity;
@@ -229,11 +206,10 @@ router.post("/cart/add", async (req, res) => {
                 product: productId,
                 variantIndex: variantIndex,
                 quantity: quantity,
-                priceAtAdd: variantPrice
+                priceAtAdd: variantPrice,
             });
         }
 
-      
         const validItems = [];
 
         for (const item of cart.items) {
@@ -244,14 +220,16 @@ router.post("/cart/add", async (req, res) => {
             }
 
             const itemVariantIndex = Number(item.variantIndex);
-            const itemVariant =
-                itemProduct.variants[itemVariantIndex];
+            const itemVariant = itemProduct.variants[itemVariantIndex];
 
             if (!itemVariant) {
                 continue;
             }
 
-            const itemPrice = Number(itemVariant.price);
+            const itemOriginalPrice = Number(itemVariant.price);
+            const itemDiscount = Number(itemProduct.discount || 0);
+
+            const itemPrice = itemOriginalPrice * (1 - itemDiscount / 100);
             const itemQuantity = Number(item.quantity);
 
             if (
@@ -278,16 +256,12 @@ router.post("/cart/add", async (req, res) => {
         await cart.save();
 
         return res.redirect("/cart");
-
     } catch (error) {
         console.log("Error adding product to cart:", error);
 
-        return res
-            .send("Failed to add product to cart");
+        return res.send("Failed to add product to cart");
     }
 });
-
-
 
 router.get("/cart", async (req, res) => {
     try {
@@ -298,13 +272,11 @@ router.get("/cart", async (req, res) => {
         }
 
         const cart = await Cart.findOne({
-            user: userId
+            user: userId,
         }).populate("items.product");
-
         res.render("customer/cart.ejs", {
-            cart
+            cart,
         });
-
     } catch (error) {
         console.log("Error loading cart:", error);
 
@@ -312,15 +284,12 @@ router.get("/cart", async (req, res) => {
     }
 });
 
-
-
-
 router.post("/cart/update/:itemId", async (req, res) => {
     try {
         const userId = req.session.user._id;
         const itemId = req.params.itemId;
         const newQuantity = Number(req.body.quantity);
-     
+
         if (!Number.isInteger(newQuantity) || newQuantity < 1) {
             return res.send("Invalid quantity");
         }
@@ -332,7 +301,7 @@ router.post("/cart/update/:itemId", async (req, res) => {
         }
 
         const item = cart.items.id(itemId);
-
+        console.log(item);
         if (!item) {
             return res.send("Cart item not found");
         }
@@ -353,28 +322,28 @@ router.post("/cart/update/:itemId", async (req, res) => {
             return res.send(`Only ${variant.quantity} items available`);
         }
 
-        // Update quantity
+
         item.quantity = newQuantity;
 
         // Update price in case it changed
-        item.priceAtAdd = variant.price;
+        const itemOriginalPrice = Number(variant.price);
+        const itemDiscount = Number(product.discount || 0);
 
-        // Recalculate cart total
+        item.priceAtAdd = itemOriginalPrice * (1 - itemDiscount / 100);
+
+
         cart.totalPrice = cart.items.reduce((total, cartItem) => {
-            return total + (cartItem.priceAtAdd * cartItem.quantity);
+            return total + cartItem.priceAtAdd * cartItem.quantity;
         }, 0);
 
         await cart.save();
 
         res.redirect("/cart");
-
     } catch (error) {
         console.log("Error updating cart:", error);
         res.send("Failed to update cart");
     }
 });
-
-
 
 router.post("/cart/remove/:itemId", async (req, res) => {
     try {
@@ -396,24 +365,20 @@ router.post("/cart/remove/:itemId", async (req, res) => {
         item.deleteOne();
 
         cart.totalPrice = cart.items.reduce((total, cartItem) => {
-            return total + (cartItem.priceAtAdd * cartItem.quantity);
+            return total + cartItem.priceAtAdd * cartItem.quantity;
         }, 0);
 
         await cart.save();
 
         res.redirect("/cart");
-
     } catch (error) {
         console.log("Error removing cart item:", error);
         res.send("Failed to remove cart item");
     }
 });
 
-
-
 router.post("/checkout", async (req, res) => {
     try {
-
         const userId = req.session.user._id;
 
         const cart = await Cart.findOne({ user: userId });
@@ -426,7 +391,6 @@ router.post("/checkout", async (req, res) => {
         let totalPrice = 0;
 
         for (const item of cart.items) {
-
             const product = await Product.findById(item.product);
 
             if (!product) {
@@ -441,13 +405,12 @@ router.post("/checkout", async (req, res) => {
 
             if (variant.quantity < item.quantity) {
                 return res.send(
-                    `${product.name} has only ${variant.quantity} item(s) left in stock.`
+                    `${product.name} has only ${variant.quantity} item(s) left in stock.`,
                 );
             }
         }
 
         for (const item of cart.items) {
-
             const product = await Product.findById(item.product);
 
             const variant = product.variants[item.variantIndex];
@@ -460,7 +423,7 @@ router.post("/checkout", async (req, res) => {
                 product: product._id,
                 variantIndex: item.variantIndex,
                 quantity: item.quantity,
-                price: item.priceAtAdd
+                price: item.priceAtAdd,
             });
 
             totalPrice += item.priceAtAdd * item.quantity;
@@ -469,15 +432,13 @@ router.post("/checkout", async (req, res) => {
         const order = await Order.create({
             user: userId,
             items: orderItems,
-            totalPrice: totalPrice
+            totalPrice: totalPrice,
         });
 
         await Cart.deleteOne({ _id: cart._id });
 
         res.redirect("/orders");
-
     } catch (error) {
-
         console.log("Checkout Error:", error);
 
         res.send("Checkout failed.");
@@ -493,15 +454,14 @@ router.get("/orders", async (req, res) => {
         }
 
         const orders = await Order.find({
-            user: userId
+            user: userId,
         })
             .populate("items.product")
             .sort({ createdAt: -1 });
 
         res.render("customer/orders.ejs", {
-            orders
+            orders,
         });
-
     } catch (error) {
         console.log("Error loading orders:", error);
 
@@ -511,22 +471,30 @@ router.get("/orders", async (req, res) => {
 
 router.get("/offers", async (req, res) => {
     try {
+        const limit = 10;
+        const page = Number(req.query.page) || 1;
 
-        // const limit = 10;
-        // const page = Number(req.query.page) || 1;
-
-        // const skip = (page - 1) * limit;
+        const skip = (page - 1) * limit;
 
         const products = await Product.find({
+            discount: { $gt: 0 },
+        }).skip(skip)
+            .limit(limit)
+            .populate("subcategory")
+            .sort({ discount: -1 });
+
+
+        const totalProducts = await Product.countDocuments({
             discount: { $gt: 0 }
-        }).populate("subcategory")
-        .sort({ discount: -1 });
-             
-        res.render("customer/productsList.ejs", {
-            title: "Offers",
-            products
         });
 
+        const totalPages = Math.ceil(totalProducts / limit);
+
+
+        res.render("customer/productsList.ejs", {
+            title: "Offers",
+            products, page, totalPages ,totalProducts
+        });
     } catch (error) {
         console.log(error);
         res.redirect("/");
@@ -534,15 +502,30 @@ router.get("/offers", async (req, res) => {
 });
 router.get("/featured", async (req, res) => {
     try {
-        const products = await Product.find().limit(20)
+        const limit = 10;
+        const page = Number(req.query.page) || 1;
+
+        const skip = (page - 1) * limit;
+          
+    const totalProducts = await Product.countDocuments({
+             views: { $gt: 0 }, 
+        });
+         console.log(totalProducts);
+        const products = await Product.find({
+            views: { $gt: 100 },
+        }).skip(skip)
+            .limit(limit)
             .populate("subcategory")
             .sort({ views: -1 });
 
+    
+        const totalPages = Math.ceil(totalProducts / limit);
+
+
         res.render("customer/productsList.ejs", {
             title: "Featured Products",
-            products
+            products, page, totalPages  ,totalProducts
         });
-
     } catch (error) {
         console.log(error);
         res.redirect("/");
@@ -550,15 +533,15 @@ router.get("/featured", async (req, res) => {
 });
 router.get("/new-arrivals", async (req, res) => {
     try {
-        const products = await Product.find().limit(20)
+        const products = await Product.find()
+            .limit(20)
             .populate("subcategory")
             .sort({ createdAt: -1 });
 
         res.render("customer/productsList.ejs", {
             title: "New Arrivals",
-            products
+            products,
         });
-
     } catch (error) {
         console.log(error);
         res.redirect("/");
