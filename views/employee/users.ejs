@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+       <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/employee/navbar.css">
+    <link rel="stylesheet" href="/css/employee/user.css">
+    <title>Document</title>
+</head>
+<body>
+                <%- include('../partials/employee/navbar') %>
+                
+<div class="container">
+
+    <h1 class="page-title">
+            <%- include('../partials/employee/navbar') %>
+
+        All Registered Users
+    </h1>
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Joined</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+            <% users.forEach((user,index)=>{ %>
+
+                <tr>
+
+                    <td><%= (page-1)*20 + index +1 %></td>
+
+                    <td><%= user.username %></td>
+
+                    <td><%= user.email %></td>
+
+                    <td>
+
+                        <span class="role <%= user.role %>">
+
+                            <%= user.role %>
+
+                        </span>
+
+                    </td>
+
+                    <td>
+                        <%= user.createdAt.toLocaleDateString() %>
+                    </td>
+
+                    <td>
+
+                        <div class="actions">
+
+                            <a class="btn view" href="/users/<%= user._id %>">
+                                View
+                            </a>
+
+                            <a class="btn edit" href="/users/edit/<%= user._id %>">
+                                Edit
+                            </a>
+
+                            <a class="btn delete" href="/users/delete/<%= user._id %>">
+                                Delete
+                            </a>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            <% }) %>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <div class="pagination">
+
+        <% if(page>1){ %>
+            <a href="?page=<%= page-1 %>">&laquo;</a>
+        <% } %>
+
+        <% for(let i=1;i<=totalPages;i++){ %>
+
+            <% if(i===page){ %>
+
+                <span class="active"><%= i %></span>
+
+            <% }else{ %>
+
+                <a href="?page=<%= i %>"><%= i %></a>
+
+            <% } %>
+
+        <% } %>
+
+        <% if(page<totalPages){ %>
+            <a href="?page=<%= page+1 %>">&raquo;</a>
+        <% } %>
+
+    </div>
+
+</div>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

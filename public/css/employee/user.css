@@ -1,0 +1,141 @@
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f4f6f9;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 40px auto;
+}
+
+.page-title {
+    font-size: 32px;
+    margin-bottom: 25px;
+    color: #222;
+}
+
+.table-container {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0,0,0,.08);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background: #2ECC71;
+    color: white;
+}
+
+th,
+td {
+    padding: 16px;
+    text-align: left;
+}
+
+tbody tr {
+    border-bottom: 1px solid #eee;
+}
+
+tbody tr:hover {
+    background: #f8fff9;
+}
+
+th {
+    font-size: 15px;
+}
+
+td {
+    font-size: 14px;
+}
+
+.role {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    color: white;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.role.admin {
+    background: #e74c3c;
+}
+
+.role.employee {
+    background: #3498db;
+}
+
+.role.customer {
+    background: #2ecc71;
+}
+
+.role.delivery {
+    background: #f39c12;
+}
+
+.pagination {
+    margin-top: 25px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.pagination a,
+.pagination span {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    text-decoration: none;
+    background: white;
+    color: #333;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+
+.pagination a:hover {
+    background: #2ECC71;
+    color: white;
+}
+
+.pagination .active {
+    background: #2ECC71;
+    color: white;
+}
+
+.actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn {
+    padding: 8px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    color: white;
+    font-size: 13px;
+}
+
+.btn.view {
+    background: #3498db;
+}
+
+.btn.edit {
+    background: #f39c12;
+}
+
+.btn.delete {
+    background: #e74c3c;
+}
+
+.btn:hover {
+    opacity: .85;
+}

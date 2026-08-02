@@ -3,7 +3,7 @@ const Products = require("./../models/Product")
 const catgoty = require("./../models/Category")
 const subcatgoty = require("./../models/Subcategory")
 const multer = require("multer")
-
+const User = require("./../models/User")
 const path = require("path")
 
 const storage = multer.diskStorage({
@@ -136,7 +136,7 @@ router.post('/new', upload.any(), async (req, res) => {
     //     variants: req.body.variants
     // };
     //    save image in variants `  
-    req.files.forEach(file => {                   
+    req.files.forEach(file => {
         const match = file.fieldname.match(/^variants\[(\d+)\]\[image\]$/);
         if (match) {
             const variantIndex = Number(match[1]);
@@ -176,7 +176,7 @@ router.post('/new', upload.any(), async (req, res) => {
             categories,
             subcategories,
             success: "Product created successfully.",
-            error: null ,  oldData: req.body
+            error: null, oldData: req.body
 
         });
 
@@ -297,19 +297,19 @@ router.post("/edit/:id", upload.any(), async (req, res) => {
             req.body.variants[variantIndex].image = file.filename;
         }
     });
-     
-         
+
+
     const updateprodect = await Products.findByIdAndUpdate(req.params.id,
-        req.body,{
+        req.body, {
         new: true,
         runValidators: true
     })
 
 
-        console.log("---------------------------------------------")
-        console.log("updateprodect : " + updateprodect)
-        console.log("---------------------------------------------")
-   
+    // console.log("---------------------------------------------")
+    // console.log("updateprodect : " + updateprodect)
+    // console.log("---------------------------------------------")
+
     res.redirect("/products/veiws")
 
 
@@ -317,9 +317,9 @@ router.post("/edit/:id", upload.any(), async (req, res) => {
 
 
 
-router.delete("/:id", async(req,res)=>{
- 
-      try {
+router.delete("/:id", async (req, res) => {
+
+    try {
         await Products.findByIdAndDelete(req.params.id);
 
         res.redirect("/products/views");
@@ -327,6 +327,35 @@ router.delete("/:id", async(req,res)=>{
         console.log(error);
         res.status(500).send("Failed to delete product.");
     }
-} )
+})
+
+
+
+router.get("/allusers", async (req, res) => {
+    try {
+
+        const limit = 20;
+        const page = Number(req.query.page) || 1;
+        const skip = (page - 1) * limit;
+
+        const allUser = await User.find()
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        const totalUsers = await User.countDocuments();
+
+        const totalPages = Math.ceil(totalUsers / limit);
+
+        res.render("users.ejs", {
+            users: allUser, page,
+            totalPages
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.redirect("/");
+    }
+});
 
 module.exports = router;
